@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#include "idv/world.h"
+#include "idv/gl_draw.h"
+#endif
+
+void display(void)
+{
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//draw the COVE world
+	//g_Draw.drawGL();
+
+    glutSwapBuffers();
+}
+
+void reshape(int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+void idle(void)
+{
+    glutPostRedisplay();
+}
+
+int main(int argc, char** argv)
+{
+	bool	bRunning = false;
+	cout << "Initializing COVE\n";
+	g_Env.m_AppPath = "/home/ribells/workspace/test/Debug/datasvr";
+	g_Env.m_LocalCachePath = "/cove_temp";
+	g_Set.m_StartupFile = "/home/ribells/workspace/test/Debug/datasvr/worlds/Earthquakes.cov";
+	cout << "Application folder is " + g_Env.m_AppPath + "\n";
+	cout << "Local data folder is " + g_Env.m_AppPath + "\n";
+	cout << "Local cache folder is " + g_Env.m_LocalCachePath + "\n";
+	cout << "Data server is " + g_Env.m_COVEServerPath + "\n";
+
+	removedir(g_Env.m_LocalCachePath);
+	makedir(g_Env.m_LocalCachePath);
+
+	//initialize the gl space
+	g_Draw.initState();
+
+	if (!initSceneManager()) {
+		cout << "\nProblems initializing OpenGL functions. Application must exit\n";
+	} else {
+		cout << "\nScene Manager loaded and ready for action.\n";
+	}
+
+	g_World.cleanDBFileList();
+
+	if (!g_World.readCoveFile(g_Set.m_StartupFile))
+	{
+		cout << "\nCannot read most recent COVE file: " + g_Set.m_StartupFile;
+		cout <<	"\nOpening default workspace " + g_Env.m_DefaultStartFile;
+	}
+
+	//init_new_world(); //from COVE main.cpp
+	g_Set.m_UpdataLayerTree = true;
+
+	bRunning = true;
+
+    glutInit(&argc, argv);
+
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitWindowSize(640, 480);
+
+    (void)glutCreateWindow("Test GLUT Program");
+    glutDisplayFunc(display);
+    glutReshapeFunc(reshape);
+    glutIdleFunc(idle);
+    glClearColor(0.2, 0.2, 0.6, 0.0);
+
+    glutMainLoop();
+
+    return EXIT_SUCCESS;
+}
