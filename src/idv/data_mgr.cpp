@@ -5,7 +5,7 @@
 
 #include <string.h>
 #include "xmlParser.h"
-//#include "netcdf.h"
+#include "netcdf.h"
 #include "data_mgr.h"
 #include "utility.h"
 #include "timer.h"
@@ -928,7 +928,6 @@ bool CData::resetCoordVars(int iVar)
  =============================================================================== */
 bool CData::readNetCDF_Raw(string fileName)
 {
-	/*
 	int				ncdfid;					//  read netCDF file handle
 	int				dim_array[MAX_NC_DIMS]; //  size of selected variable dimensions
 	int				ndims, nvars, natts;	// # of selected variable dimensions
@@ -1066,8 +1065,6 @@ bool CData::readNetCDF_Raw(string fileName)
 
 	g_Timers.stopPerfTimer(IO_PERF_TIMER);
 	return true;
-	*/
-	return false;
 }
 
 /* =============================================================================

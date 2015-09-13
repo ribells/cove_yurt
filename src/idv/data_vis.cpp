@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-//#include "netcdf.h"
+#include "netcdf.h"
 
 #include "utility.h"
 #include "scene/scene_mgr.h"
@@ -1354,10 +1354,12 @@ void CDataLayer::initData(double dTime, double dFrameTime)
 		goto cleanup;
 	}
 	//BDC temporary test here...
-	m_Lead = NO_TIME;
+	//m_Lead = NO_TIME;
+	m_Lead = 1279667;
 	//m_Trail = 1279667;
 	m_Trail = 12796674;
-	//  figure out cur point location window based on time
+	//cout << "Trail is " << m_Trail << "\n";
+	//figure out cur point location window based on time
 	dLead = m_Lead == NO_TIME ? m_Time : m_Time - m_Lead;
 	dTrail = m_Trail == NO_TIME ? m_Time : m_Time + m_Trail;
 	iPntLead = m_Lead == -1 ? 0 : -1;

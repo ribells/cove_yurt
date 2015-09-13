@@ -1293,7 +1293,18 @@ bool CDraw::drawGL()
 	if (g_Set.m_ShowData) {
 		g_Timers.startTimer(DATA_RENDER_TIMER);
 		double spd = g_World.getTimeLine().getSpeed();
-		double temptime = (double) g_World.getTimeLine().getTime() + spd/100.0;
+		double temptime = 0.0;
+		if(g_World.getTimeLine().getReverse()) {
+			temptime = (double) g_World.getTimeLine().getTime() - (spd/10.0);
+		} else if(g_World.getTimeLine().getPlaying()) {
+			temptime = (double) g_World.getTimeLine().getTime() + (spd/10.0);
+		}
+		if(temptime < g_World.getTimeLine().getStart()) {
+			temptime = g_World.getTimeLine().getStart();
+		}
+		if(temptime > g_World.getTimeLine().getFinish()) {
+			temptime = g_World.getTimeLine().getFinish();
+		}
 		g_World.getTimeLine().setCurTime(temptime);
 		//printf("Drawing world at %f\n", temptime);
 		g_World.getDataSet().Render(spd);
@@ -1301,7 +1312,6 @@ bool CDraw::drawGL()
 	}
 
 	//glDisable(GL_NORMALIZE);
-
 	//glDepthRange(0, 1);
 
 	//if (g_Set.m_ShowNames && g_Set.m_ShowObjects) {

@@ -280,6 +280,9 @@ string web_func::cacheWebFiles(string strLink, string strCacheFolder, string str
 		strNewPath = strLink;
 		if (fileexists(strNewPath))	//  see if the file exists based on the path
 			return strNewPath;
+		strNewPath = g_Env.m_AppPath + "/" + strLink;
+		if (fileexists(strNewPath))	//  see if it's relative to the run location
+			return strNewPath;
 		strNewPath = g_Env.m_CurFilePath + getFileName(strLink);
 		if (fileexists(strNewPath))	//  see if it's with the cov file
 			return strNewPath;

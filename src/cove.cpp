@@ -10,7 +10,8 @@
 #include <stdlib.h>
 #include "idv/world.h"
 #include "idv/gl_draw.h"
-//#include "scene/scene_mgr.h"
+#include "timeWidget.h"
+
 #include "scene/image.h"
 #include <FL/Fl_JPEG_Image.H>
 
@@ -40,7 +41,6 @@ void init_cove(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 	*/
 
-	//string strFileName = "Axial_Textures_4-13-15.003.jpg";
 	strFileName = "Axial_bottom_terrain2_1_1.jpg";
 	img = new Fl_JPEG_Image (strFileName.c_str());
 	if (img->d() == 0) {
@@ -61,11 +61,21 @@ void init_cove(void)
 #define SPEED 10.0f
 
 /* draw the objects. */
-void draw_cove(void)
+void draw_cove(float x, float y, float z, float yaw, float pitch, float roll)
 {
+	/*
+	 * Each frame we update the terrain if an update bit has been set,
+	 * we draw all the content (picking up changes from animated elements),
+	 * and update the time user interface to show date/time change.
+	 */
 	g_World.updateTerrain();
 	g_Draw.drawGL();
+	tm_time_ui(0, x, y, z, yaw, pitch, roll);
 
+	/*
+	 * DRAW additional visual elements of use for the COVE file that we're demonstrating initially.
+	 * These can be incorporated in the COVE file through various elements and attributes
+	*/
 	GLUquadricObj *sphereObj, *diskObj, *cylinderObj;
 	GLfloat pos[] = {-130.0, 0, -46.0, 1};
 	float white[] = { 0.8, 0.8, 0.8, 0.5 };
@@ -179,16 +189,18 @@ void draw_cove(void)
 		glVertex3f(0.022f,-0.2f,0.07427f);
 	glEnd();
 /*
-	glTranslatef(0.0, 0.0, -40.0);
+	//glTranslatef(0.0, 0.0, -40.0);
 	//gluCylinder(cylinderObj, 1.6, 1.0, 3, 10, 2);
-	glTranslatef(0.0, 0.0, 80.0);
-	gluDisk(diskObj, 0, 1.6, 10, 1);
+	//glTranslatef(0.0, 0.0, 80.0);
+	//gluDisk(diskObj, 0, 1.6, 10, 1);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, red);
 	//draw sphere where internal COVE camera's look at point is
 	Vec3d look_at = g_Draw.getCamera().getLookAt();
-	glTranslatef(look_at[0], look_at[1], look_at[2]);
+	glTranslatef(look_at[0], look_at[1], look_at[2]-40.0);
+	//glTranslatef(-130.0, 0.08, -46.0);
 	glScalef(10.010, 10.010, 10.010);
 	gluSphere(sphereObj, 1.6, 8, 8);
 */
 	glPopMatrix();
 }
+

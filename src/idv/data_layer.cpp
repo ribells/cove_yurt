@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-//#include "netcdf.h"
+#include "netcdf.h"
 
 #include "utility.h"
 #include "scene/scene_mgr.h"

@@ -1,18 +1,20 @@
 /*
  * test.cpp
  *
- * Adapted from vrg3d_demo.cpp.
+ * Adapted from vrg3d_demo.cpp for COVE integration.
+ * (see: http://cove.ocean.washington.edu/
  */
 
 #include <vrg3d/VRG3D.h>
 #include <GL/glut.h>
 #include "timer.h"
+#include "timeWidget.h"
 #include "idv/world.h"
 #include "idv/gl_draw.h"
 
 using namespace G3D;
 
-extern void draw_cove(), init_cove();
+extern void init_cove(), draw_cove(float x, float y, float z, float yaw, float pitch, float roll);
 
 /** This is a sample VR application using the VRG3D library.  Two key
     methods are filled in here: doGraphics() and doUserInput().  The
@@ -35,12 +37,18 @@ public:
      // Initialize the coordinate frame for the display.
      _virtualToRoomSpace = CoordinateFrame();
 
-     /* The default starting point has the eye level at the x, y, z origin, which
-      * is at 130 degrees West and 46 degrees North off the coast of Oregon. The
-      * origin is confusing for the viewer on startup, and renders poorly too.
-      * We move the virtual space down a few km for a more sensible view. */
+     /* The default starting point with Axial earthquake data has the eye level at
+      * the x, y, z origin, which is at 130 degrees West and 46 degrees North off the
+      * coast of Oregon. The origin is confusing for the viewer on startup, and renders
+      * poorly too. We move the virtual space down a few km for a more sensible view. */
+
+     // IF YOU WANT TO USE THE DEFAULT VIEWPOINT FROM THE COVE CAMERA, USE:
+     // Vec3d look_at = g_Draw.getCamera().getLookAt();
+     // _virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
+
+     // OTHERWISE, WRITE YOUR OWN STARTING VIEWPOINT HERE (location and then orientation):
      _virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.21,46.0)) * _virtualToRoomSpace;
-	 _virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(1,0,0), toRadians(0.0))) * _virtualToRoomSpace;
+	 _virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(0.0))) * _virtualToRoomSpace;
      float x = 0.0;
      float y = 0.0;
      float z = 0.0;
@@ -48,6 +56,7 @@ public:
      float pitch = 0.0;
      float roll = 0.0;
      _virtualToRoomSpace.getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
+     //if you choose a different viewpoint, update the COVE camera to be the same:
      g_Draw.SetCameraPosition(Vec3f(x, y, z), Vec3f(yaw, pitch, roll));
 
      // This is the background color for the world:
@@ -55,10 +64,6 @@ public:
      //_clearColor = Color3(0.20, 0.20, 0.55);
      // The actual visual content for the world loads from another code file:
      init_cove();
-
-     Vec3d look_at = g_Draw.getCamera().getLookAt();
-     //_virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
-	 //_virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(-410.0))) * _virtualToRoomSpace;
   }
 
   virtual ~MyVRApp() {}
@@ -88,16 +93,15 @@ public:
         exit(0);
       }
 
-      // Save all the tracker events that come in so we can use them
-      // in the doGraphics routine
+      // Save all the tracker events that come in so we can use them in the doGraphics routine
       else if (endsWith(events[i]->getName(), "_Tracker")) {
         if (_trackerFrames.containsKey(events[i]->getName())) {
-           _trackerFrames[events[i]->getName()] = events[i]->getCoordinateFrameData();
+        	_trackerFrames[events[i]->getName()] = events[i]->getCoordinateFrameData();
         } else {
         	_trackerFrames.set( events[i]->getName(), events[i]->getCoordinateFrameData() );
         }
       // Respond to events to do some simple navigation
-      } else if (events[i]->getName() == "kbd_H_down") { //go to internal look_at position
+      } else if (events[i]->getName() == "kbd_H_down") { //go to COVE camera's look_at position
     	  Vec3d look_at = g_Draw.getCamera().getLookAt();
     	  _virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
       } else if (events[i]->getName() == "kbd_LEFT_down") {
@@ -109,13 +113,43 @@ public:
       } else if (events[i]->getName() == "kbd_DOWN_down") {
     	  _virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(1,0,0), toRadians(-0.5))) * _virtualToRoomSpace;
       } else if (events[i]->getName() == "kbd_W_down") {
-    	  _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,0.01)) * _virtualToRoomSpace;
+    	  if(get_time_ui_active_index()>=0) {
+    		  set_time_ui_value(-1);
+    	  } else {
+    		  _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,0.01)) * _virtualToRoomSpace;
+    	  }
       } else if (events[i]->getName() == "kbd_S_down") {
-    	  _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,-0.01)) * _virtualToRoomSpace;
+    	  if(get_time_ui_active_index()>=0) {
+    		  set_time_ui_value(1);
+    	  } else {
+    		  _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,-0.01)) * _virtualToRoomSpace;
+    	  }
       } else if (events[i]->getName() == "kbd_A_down") {
-    	  _virtualToRoomSpace = CoordinateFrame(Vector3(-0.01,0,0)) * _virtualToRoomSpace;
+    	  if(get_time_ui_active_index()>=0) {
+    		  get_previous_ui_active_index();
+    	  } else {
+    		  _virtualToRoomSpace = CoordinateFrame(Vector3(-0.01,0,0)) * _virtualToRoomSpace;
+    	  }
       } else if (events[i]->getName() == "kbd_D_down") {
-    	  _virtualToRoomSpace = CoordinateFrame(Vector3(0.01,0,0)) * _virtualToRoomSpace;
+    	  if(get_time_ui_active_index()>=0) {
+    		  get_next_ui_active_index();
+    	  } else {
+    		  _virtualToRoomSpace = CoordinateFrame(Vector3(0.01,0,0)) * _virtualToRoomSpace;
+    	  }
+      } else if (events[i]->getName() == "kbd_I_down") {
+    	  g_World.getTimeLine().setSlower();
+      } else if (events[i]->getName() == "kbd_K_down") {
+    	  g_World.getTimeLine().setFaster();
+      } else if (events[i]->getName() == "kbd_R_down") {
+    	  g_World.getTimeLine().setPlay(true, true);
+      } else if (events[i]->getName() == "kbd_F_down") {
+    	  g_World.getTimeLine().setPlay(true, false);
+      } else if (events[i]->getName() == "kbd_T_down") {
+    	  if(get_time_ui_active_index() < 0) {
+    		  show_layout_timeline(true);
+    	  } else {
+    		  show_layout_timeline(false);
+    	  }
       } else if (events[i]->getName() == "kbd_SHIFT_UP_down") {
     	  _virtualToRoomSpace = CoordinateFrame(Vector3(0,0.01,0)) * _virtualToRoomSpace;
       } else if (events[i]->getName() == "kbd_SHIFT_DOWN_down") {
@@ -219,24 +253,23 @@ public:
   {
     // Load a font for the fps display, findVRG3DDataFile looks first
     // in the current directory and then in $G/src/VRG3D/share/
-    //
-    while(glGetError() != GL_NO_ERROR)
-    {  std::cout<<"Flushing gl errors"<<std::endl;
+
+    while(glGetError() != GL_NO_ERROR) {
+    	std::cout<<"Flushing gl errors"<<std::endl;
     }
 
-    if (_font.isNull())
-    {  std::string fontfile = VRApp::findVRG3DDataFile("eurostyle.fnt");
-
-       if ( FileSystem::exists( fontfile ))
-       {   std::cout << fontfile << std::endl;
-           _font = GFont::fromFile( fontfile );
-       }
+    if (_font.isNull()) {
+    	std::string fontfile = VRApp::findVRG3DDataFile("eurostyle.fnt");
+    	if ( FileSystem::exists( fontfile )) {
+    		std::cout << fontfile << std::endl;
+    		_font = GFont::fromFile( fontfile );
+    	}
     }
 
     Array<std::string> trackerNames = _trackerFrames.getKeys();
 
-    for (int i=0;i<trackerNames.size();i++)
-    {  CoordinateFrame trackerFrame = _trackerFrames[trackerNames[i]];
+    for (int i=0;i<trackerNames.size();i++) {
+    	CoordinateFrame trackerFrame = _trackerFrames[trackerNames[i]];
 
         // Draw laser pointer.
         if (trackerNames[i] == "Wand_Tracker") {
@@ -307,12 +340,11 @@ public:
     //Draw::axes( CoordinateFrame(), rd, Color3::red(), Color3::green(), Color3::blue(), 1.25 );
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    glEnable(GL_COLOR_MATERIAL);
 
+    glEnable(GL_COLOR_MATERIAL);
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
-
     glDisable( GL_COLOR_MATERIAL );
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -321,10 +353,17 @@ public:
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glDisable(GL_LIGHTING);
 
-    draw_cove();
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+    float yaw = 0.0;
+    float pitch = 0.0;
+    float roll = 0.0;
+    _virtualToRoomSpace.getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
 
+    //All our drawing objects are from within the COVE program parts we've incorporated
+    draw_cove(x, y, z, yaw, pitch, roll);
     rd->popState();
-
   }
 
 protected:
@@ -343,16 +382,17 @@ int main( int argc, char **argv )
 	  setupStr = std::string(argv[1]);
   }
 
+  //START SETTING UP THE COVE ENVIRONMENT (TO DO: use a configuration file for setup outside of compile)
   bool	bRunning = false;
   bool  bRunLocal = true;
   cout << "Initializing COVE\n";
   if(bRunLocal) {
-	  g_Env.m_AppPath = "/home/ribells/workspace/test/Debug/datasvr";
-	  g_Set.m_StartupFile = "/home/ribells/workspace/test/Debug/datasvr/worlds/Earthquakes.cov";
+	  g_Env.m_CurFilePath = "/home/ribells/workspace/test/Debug/";
   } else {
-	  g_Env.m_AppPath = "/users/guest461/test/Debug/datasvr";
-	  g_Set.m_StartupFile = "/users/guest461/test/Debug/datasvr/worlds/Earthquakes.cov";
+	  g_Env.m_CurFilePath = "/users/guest461/test/Debug/";
   }
+  g_Env.m_AppPath = g_Env.m_CurFilePath + "datasvr";
+  g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Earthquakes.cov";
   g_Env.m_LocalCachePath = "cove_temp";
   cout << "Application folder is " + g_Env.m_AppPath + "\n";
   cout << "Local data folder is " + g_Env.m_AppPath + "\n";
@@ -362,7 +402,7 @@ int main( int argc, char **argv )
   removedir(g_Env.m_LocalCachePath);
   makedir(g_Env.m_LocalCachePath);
 
-  //initialize the gl space
+  //initialize the GL space
   g_Draw.initState();
 
   if (!initSceneManager()) {
@@ -381,10 +421,11 @@ int main( int argc, char **argv )
   		cout <<	"\nOpening default workspace " + g_Env.m_DefaultStartFile;
   }
 
-  //init_new_world(); //from COVE main.cpp
+  //init_new_world(); //from COVE main.cpp - not needed here?
   g_Set.m_UpdataLayerTree = true;
 
-  g_World.getTimeLine().setPlay(true);
+  //only start up world through VRPN - to get time synchronization between nodes
+  g_World.getTimeLine().setPlay(false, false);
 
   bRunning = true;
 

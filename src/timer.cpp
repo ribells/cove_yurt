@@ -13,7 +13,6 @@
 #include "utility.h"
 #include "timer.h"
 
-
 CTimerSet g_Timers;
 
 //  TIMER CLASS

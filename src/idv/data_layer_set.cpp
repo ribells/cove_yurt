@@ -1,5 +1,5 @@
 /* =============================================================================
-	File: data_set.cpp
+	File: data_layer_set.cpp
 
  =============================================================================== */
 
@@ -7,7 +7,7 @@
 #include "timer.h"
 
 CObjectPtr	SetObjectFromName(string strName);
-void			SetObjectPosition(CObjectPtr pObject, Vec3f pos, Vec3f dir);
+void		SetObjectPosition(CObjectPtr pObject, Vec3f pos, Vec3f dir);
 
 /* =============================================================================
  =============================================================================== */
@@ -30,8 +30,9 @@ string CTimeLine::getTimeString(double dTime)
  =============================================================================== */
 void CTimeLine::resetTimer()
 {
-	if (!m_Play)
+	if (!m_Play) {
 		return;
+	}
 	m_TimerBase = m_Time + m_FrameTime;
 	g_Timers.startTimer(VIDEO_TIMER);
 }
@@ -49,7 +50,7 @@ void CTimeLine::setPlay(bool bPlay, bool bReverse)
  =============================================================================== */
 void CTimeLine::setFaster()
 {
-	m_Speed *= 2;
+	m_Speed *= 1.25;
 	resetTimer();
 }
 
@@ -57,7 +58,7 @@ void CTimeLine::setFaster()
  =============================================================================== */
 void CTimeLine::setSlower()
 {
-	m_Speed /= 2;
+	m_Speed /= 1.25;
 	resetTimer();
 }
 
@@ -65,9 +66,9 @@ void CTimeLine::setSlower()
  =============================================================================== */
 bool CTimeLine::updateCurTime()
 {
-	if (!m_Dirty && !m_Play)
+	if (!m_Dirty && !m_Play) {
 		return false;
-
+	}
 	if (m_Play)	//  update the timer time
 	{
 		double	dTimerTime = g_Timers.pollTimer(VIDEO_TIMER) * m_Speed;

@@ -5,7 +5,7 @@
 
 #include "data_mgr.h"
 #include "utility.h"
-//#include "netcdf.h"
+#include "netcdf.h"
 
 /* =============================================================================
     Data Handling Class
@@ -72,8 +72,8 @@ void CVariable::updateMinMax()
 	float fNoVal = (float) m_NoValue;
 	for (int i = 0; i < iSize; i++)
 	{
-		float	*fp = bDData ? NULL : &m_FData[i];
-		double	*dp = bDData ? &m_DData[i] : NULL;
+		float  *fp = bDData ? NULL : &m_FData[i];
+		double *dp = bDData ? &m_DData[i] : NULL;
 		double val = fp ? *fp : *dp;
 		if (!finite(val) || isnan(val))
 		{

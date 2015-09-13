@@ -547,7 +547,7 @@ public:
 	void clean()
 	{
 		getTimeLine().setPlay(false);
-		getTimeLine().updateBounds(0,0);
+		//getTimeLine().updateBounds(0,0);
 		//cache settings
 		t_scale Scale = getScale();
 		float fShading = getShading();
