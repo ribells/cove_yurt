@@ -1354,10 +1354,8 @@ void CDataLayer::initData(double dTime, double dFrameTime)
 		goto cleanup;
 	}
 	//BDC temporary test here...
-	//m_Lead = NO_TIME;
-	m_Lead = 1279667;
-	//m_Trail = 1279667;
-	m_Trail = 12796674;
+	m_Lead = NO_TIME;
+	m_Trail = NO_TIME;
 	//cout << "Trail is " << m_Trail << "\n";
 	//figure out cur point location window based on time
 	dLead = m_Lead == NO_TIME ? m_Time : m_Time - m_Lead;
@@ -1937,7 +1935,6 @@ void CDataLayer::RenderData(double dSpeed, int iSelectID)
 					(m_Time - dSpeed) > getData().getDataTime(ndx))
 				{
 					double dFade = 5.0f - max(1.0, min(4.0, (double) (m_Time - getData().getDataTime(ndx)) / (dSpeed)));
-					//double dFade = ((rand()%100)/100.0);
 					size *= 0.4 * dFade;
 				} else { //Hasn't errupted yet in timeline
 					size *= 0.2;
