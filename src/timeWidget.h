@@ -13,6 +13,7 @@ void show_timeline(bool b);
 int get_time_ui_active_index();
 int get_next_ui_active_index();
 int get_previous_ui_active_index();
+int get_time_ui_current_time();
 int set_time_ui_active_index(int i);
 int set_time_ui_value(int i);
 void show_layout_timeline(bool bShow);

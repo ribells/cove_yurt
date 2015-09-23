@@ -2,7 +2,7 @@
  * test.cpp
  *
  * Adapted from vrg3d_demo.cpp for COVE integration.
- * (see: http://cove.ocean.washington.edu/
+ * (see: http://cove.ocean.washington.edu/)
  */
 
 #include <vrg3d/VRG3D.h>
@@ -60,8 +60,8 @@ public:
      g_Draw.SetCameraPosition(Vec3f(x, y, z), Vec3f(yaw, pitch, roll));
 
      // This is the background color for the world:
-     _clearColor = Color3(0.0, 0.0, 0.0);
-     //_clearColor = Color3(0.20, 0.20, 0.55);
+     //_clearColor = Color3(0.0, 0.0, 0.0);
+     _clearColor = Color3(0.15, 0.15, 0.40);
      // The actual visual content for the world loads from another code file:
      init_cove();
   }

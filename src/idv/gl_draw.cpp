@@ -23,6 +23,7 @@
 
 #include "gl_draw.h"
 #include "settings.h"
+#include "../timeWidget.h"
 #include "web/web_file.h"
 
 #include <vl/VLgl.h>
@@ -1298,12 +1299,15 @@ bool CDraw::drawGL()
 			temptime = (double) g_World.getTimeLine().getTime() - (spd/10.0);
 		} else if(g_World.getTimeLine().getPlaying()) {
 			temptime = (double) g_World.getTimeLine().getTime() + (spd/10.0);
+		} else {
+			temptime = get_time_ui_current_time();  //world is stopped
+			g_World.getTimeLine().setCurTime(temptime);
 		}
-		if(temptime < g_World.getTimeLine().getStart()) {
-			temptime = g_World.getTimeLine().getStart();
+		if(temptime < g_World.getTimeLine().getSelStart()) {
+			temptime = g_World.getTimeLine().getSelStart();
 		}
-		if(temptime > g_World.getTimeLine().getFinish()) {
-			temptime = g_World.getTimeLine().getFinish();
+		if(temptime > g_World.getTimeLine().getSelFinish()) {
+			temptime = g_World.getTimeLine().getSelFinish();
 		}
 		g_World.getTimeLine().setCurTime(temptime);
 		//printf("Drawing world at %f\n", temptime);
@@ -1318,7 +1322,7 @@ bool CDraw::drawGL()
 	//	g_World.getLayoutSet().RenderNames();
 	//}
 
-	//g_Draw.draw3DText("TESTING", Vec3f(0.0, 0.0, 30.0), 0, 0, true);
+	//g_Draw.draw3DText("TESTING", Vec3f(130.0,3.0,47.0), 0, 0, true);
 
 	//drawWindows();
 

@@ -24,7 +24,7 @@ static int g_TimeSel = 0;
 static int g_CurTime = 0;
 static Vec3f g_TWLocation = Vec3f(0.0, 0.0, 0.0);
 static Vec3f g_TWRotation = Vec3f(0.0, 0.0, 0.0);
-static int time_ui_active_index = -1;
+static int time_ui_active_index = 9;
 static float active[] = { 0.5, 1.0, 0.5, 1.0 };
 
 const static int CURRENT_TIME = 0;
@@ -95,12 +95,22 @@ void tm_time_ui(int iType, float x, float y, float z, float yaw, float pitch, fl
 		glLineWidth(1.0f);
 		glPopMatrix();
 	}
+
+	//Set the trail to be the max time initially
+	g_World.getTimeLine().setTrail(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
+
+	//TO DO: Draw Labels for Current Values
+	//g_Draw.draw3DText("TESTING", Vec3f(130.0,3.0,47.0), 0, 0, true);
 	/*
 	g_World.getTimeLine().updateBounds(bStart ? tm : NO_TIME, bStart ? NO_TIME : tm);
 	g_World.getDataSet().setSelStart(g_World.getTimeLine().getSelStart());
 	g_World.getDataSet().setSelFinish(g_World.getTimeLine().getSelFinish());
 	g_Set.m_NeedRedraw = true;
 	*/
+}
+
+int get_time_ui_current_time() {
+	return g_CurTime;
 }
 
 int set_time_ui_active_index(int i) {
@@ -111,18 +121,18 @@ int set_time_ui_active_index(int i) {
 int set_time_ui_value(int i) {
 	double dtime;
 	float timestep = (g_World.getTimeLine().getFinish()-g_World.getTimeLine().getStart())/1256.0;
-	cout << "timestep is " << timestep << "\n";
 	switch (time_ui_active_index) {
+	  /*
 	  case CURRENT_TIME :
 	  	  if(i > 0) {
 	  		  dtime = g_World.getTimeLine().getTime()+timestep;
 	  		  if(dtime < g_World.getTimeLine().getSelFinish()) {
-	  			  g_World.getDataSet().setCurTime(dtime);
+	  			  g_World.getTimeLine().setCurTime(dtime);
 	  		  }
 	  	  } else {
 	  		  dtime = g_World.getTimeLine().getTime()-timestep;
 	  		  if(dtime > g_World.getTimeLine().getSelStart()) {
-	  			  g_World.getDataSet().setCurTime(dtime);
+	  			  g_World.getTimeLine().setCurTime(dtime);
 	  		  }
 	  	  }
 	  	  break;
@@ -132,6 +142,10 @@ int set_time_ui_value(int i) {
   	  		 if(dtime < g_World.getTimeLine().getSelFinish()) {
   	  			  g_World.getTimeLine().setSelStart(dtime);
   	  			  g_World.getDataSet().setSelStart(dtime);
+  	  			  if(dtime > g_World.getTimeLine().getTime()) {
+  	  				  g_World.getTimeLine().setCurTime(dtime);
+  	  				  draw_current_time_ui();
+  	  			  }
   	  		  }
   	  	  } else {
   	  		 dtime = g_World.getTimeLine().getSelStart()-timestep;
@@ -150,24 +164,30 @@ int set_time_ui_value(int i) {
   	  		  }
   	  	  } else {
   	  		 dtime = g_World.getTimeLine().getSelFinish()-timestep;
+	  		 cout << "SelFinish is " << dtime << " : " << g_World.getTimeLine().getTime() << "\n";
   	  		 if(dtime > g_World.getTimeLine().getSelStart()) {
 	  			  g_World.getTimeLine().setSelFinish(dtime);
 	  			  g_World.getDataSet().setSelFinish(dtime);
+  	  			  if(dtime < g_World.getTimeLine().getTime()) {
+  	  				  g_World.getTimeLine().setCurTime(dtime);
+  	  				  draw_current_time_ui();
+  	  			  }
   	  		 }
   	  	  }
 	  	  break;
+	  */
 	  case LEAD_TIME :
   	  	  if(i > 0) {
-  	  		  dtime = g_World.getTimeLine().getLead()+timestep;
-  	  		  if(dtime <= g_World.getTimeLine().getTime()) {
-  	  			  g_World.getTimeLine().setLead(dtime);
-  	  		  	  g_World.getDataSet().setLead(dtime);
-  	  		  }
-  	  	  } else {
   	  		  dtime = g_World.getTimeLine().getLead()-timestep;
   	  		  if(dtime >= g_World.getTimeLine().getSelStart()) {
   	  			  g_World.getTimeLine().setLead(dtime);
   	  			  g_World.getDataSet().setLead(dtime);
+  	  		  }
+  	  	  } else {
+  	  		  dtime = g_World.getTimeLine().getLead()+timestep;
+  	  		  if(dtime <= g_World.getTimeLine().getTime()) {
+  	  			  g_World.getTimeLine().setLead(dtime);
+  	  		  	  g_World.getDataSet().setLead(dtime);
   	  		  }
   	  	  }
 	  	  break;
@@ -208,11 +228,9 @@ int set_time_ui_value(int i) {
 		  g_World.getTimeLine().setTime(g_CurTime);
 	  	  break;
 	  case STOP_PLAY :
-	  	  cout << "Before time is " << g_World.getTimeLine().getTime() << "\n";
 		  g_CurTime = (int) g_World.getTimeLine().getTime();
 	  	  g_World.getTimeLine().setPlay(false, false);
-	  	  g_World.getTimeLine().setTime(g_CurTime);
-	  	  cout << "After time is " << g_World.getTimeLine().getTime() << "\n";
+	  	  g_World.getTimeLine().setCurTime(g_CurTime);
 	  	  break;
 	  case PLAY_FORWARD :
 		  g_CurTime = (int) g_World.getTimeLine().getTime();

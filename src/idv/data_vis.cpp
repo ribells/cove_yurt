@@ -1357,7 +1357,7 @@ void CDataLayer::initData(double dTime, double dFrameTime)
 	m_Lead = NO_TIME;
 	m_Trail = NO_TIME;
 	//cout << "Trail is " << m_Trail << "\n";
-	//figure out cur point location window based on time
+	//figure out current point location window based on time
 	dLead = m_Lead == NO_TIME ? m_Time : m_Time - m_Lead;
 	dTrail = m_Trail == NO_TIME ? m_Time : m_Time + m_Trail;
 	iPntLead = m_Lead == -1 ? 0 : -1;
@@ -1914,6 +1914,10 @@ void CDataLayer::RenderData(double dSpeed, int iSelectID)
 			m_MagnifyCurrent = true;
 			m_Time = g_World.getTimeLine().getTime();
 
+			/* BDC to integrate into initData code later: */
+			int start_time = m_Time - g_World.getTimeLine().getLead() - dSpeed;
+			int end_time = m_Time + g_World.getTimeLine().getTrail();
+
 			for (int i = 0; i < m_DisplayCnt; i++)
 			{
 				if (ISNODATA(m_DataPlane[m_DisplayNdx[i]])) {
@@ -1930,42 +1934,47 @@ void CDataLayer::RenderData(double dSpeed, int iSelectID)
 					//}
 				}
 				int ndx = m_IndexCur - (m_DisplayCur - i);
-				if (m_MagnifyCurrent &&
-					//m_DisplayCur != -1 && i <= m_DisplayCur &&
-					(m_Time - dSpeed) > getData().getDataTime(ndx))
-				{
-					double dFade = 5.0f - max(1.0, min(4.0, (double) (m_Time - getData().getDataTime(ndx)) / (dSpeed)));
-					size *= 0.4 * dFade;
-				} else { //Hasn't errupted yet in timeline
-					size *= 0.2;
-				}
-				setPointColor(i, iSelectID);
-				Vec3f pos = m_ScnPlane[i];
-
-				if (bGlyph)
-				{
-					glPushMatrix();
-					glTranslatef(pos[0], 0.08+pos[1]*1000.0, pos[2]);
-					Vec3d rot = getSceneRot(pos);
-					glRotatef(rot[1], 0, 1, 0);
-					glRotatef(rot[2], 0, 0, 1);
-					glRotatef(getObjectRot(), 0, 1, 0);
-					size *=  0.10;
-					glScalef(size[0], size[2], size[1]);
-					drawPrimType(m_PrimType);
-					glPopMatrix();
-				} else {
-					if (size[0] != dLastSize) {
-						glEnd();
-						dLastSize = size[0];
-						glPointSize(max(1.0, size[0] * 7.0));
-						glBegin(GL_POINTS);
+				/* BDC temporary add */
+				if(getData().getDataTime(ndx) > start_time &&
+				   getData().getDataTime(ndx) < end_time) {
+					if (m_MagnifyCurrent &&
+							//m_DisplayCur != -1 && i <= m_DisplayCur &&  //temporary comment BDC - use 3D GUI control time values instead above
+							(m_Time - dSpeed) > getData().getDataTime(ndx))
+					{
+						double dFade = 5.0f - max(1.0, min(4.0, (double) (m_Time - getData().getDataTime(ndx)) / (dSpeed)));
+						size *= 0.4 * dFade;
+					} else { //Hasn't errupted yet in timeline
+						size *= 0.2;
 					}
-					glVertex3d(pos[0], pos[1], pos[2]);
+					setPointColor(i, iSelectID);
+					Vec3f pos = m_ScnPlane[i];
+
+					if (bGlyph)
+					{
+						glPushMatrix();
+						glTranslatef(pos[0], 0.08+pos[1]*1000.0, pos[2]);
+						Vec3d rot = getSceneRot(pos);
+						glRotatef(rot[1], 0, 1, 0);
+						glRotatef(rot[2], 0, 0, 1);
+						glRotatef(getObjectRot(), 0, 1, 0);
+						size *=  0.10;
+						glScalef(size[0], size[2], size[1]);
+						drawPrimType(m_PrimType);
+						glPopMatrix();
+					} else {
+						if (size[0] != dLastSize) {
+							glEnd();
+							dLastSize = size[0];
+							glPointSize(max(1.0, size[0] * 7.0));
+							glBegin(GL_POINTS);
+						}
+						glVertex3d(pos[0], pos[1], pos[2]);
+					}
 				}
 			}
-			if (!bGlyph)
+			if (!bGlyph) {
 				glEnd();
+			}
 		}
 	}
 
