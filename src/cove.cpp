@@ -16,6 +16,7 @@
 #include <FL/Fl_JPEG_Image.H>
 
 void draw(void);
+void draw_decorations(void);
 
 void init_cove(void)
 {
@@ -71,11 +72,15 @@ void draw_cove(float x, float y, float z, float yaw, float pitch, float roll)
 	g_World.updateTerrain();
 	g_Draw.drawGL();
 	tm_time_ui(0, x, y, z, yaw, pitch, roll);
+	draw_decorations();
+}
 
-	/*
-	 * DRAW additional visual elements of use for the COVE file that we're demonstrating initially.
-	 * These can be incorporated in the COVE file through various elements and attributes
-	*/
+/*
+ * DRAW additional visual elements of use for the COVE file that we're demonstrating initially.
+ * These can be incorporated in the COVE file through various elements and attributes
+ */
+void draw_decorations(void)
+{
 	GLUquadricObj *sphereObj, *diskObj, *cylinderObj;
 	GLfloat pos[] = {-130.0, 0, -46.0, 1};
 	float white[] = { 0.8, 0.8, 0.8, 0.5 };
@@ -103,7 +108,7 @@ void draw_cove(float x, float y, float z, float yaw, float pitch, float roll)
 		glTexCoord2f(1.0, 0.0); glVertex3f(-0.12f,0.0f,0.2f);
 		glTexCoord2f(0.0, 0.0); glVertex3f(-0.12f,0.0f,-0.12f);
 	glEnd();
-*/
+
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, brown);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0, 0.0); glVertex3f(-0.12f,-0.2f,-0.12f);
@@ -111,6 +116,7 @@ void draw_cove(float x, float y, float z, float yaw, float pitch, float roll)
 		glTexCoord2f(1.0, 1.0); glVertex3f(0.2f,-0.2f,0.2f);
 		glTexCoord2f(0.0, 1.0); glVertex3f(0.2f,-0.2f,-0.12f);
 	glEnd();
+*/
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, white);
 	//Box for depth
 	glBegin(GL_LINE_STRIP);

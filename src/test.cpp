@@ -14,7 +14,7 @@
 
 using namespace G3D;
 
-extern void init_cove(), draw_cove(float x, float y, float z, float yaw, float pitch, float roll);
+extern void init_cove(), draw_cove(float x, float y, float z, float yaw, float pitch, float roll), draw_decorations();
 
 /** This is a sample VR application using the VRG3D library.  Two key
     methods are filled in here: doGraphics() and doUserInput().  The
@@ -46,7 +46,7 @@ public:
      // Vec3d look_at = g_Draw.getCamera().getLookAt();
      // _virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
 
-     // OTHERWISE, WRITE YOUR OWN STARTING VIEWPOINT HERE (location and then orientation):
+     // OTHERWISE, WRITE YOUR OWN STARTING VIEWPOINT HERE (location and then orientation - then do light below):
      _virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.21,46.0)) * _virtualToRoomSpace;
 	 _virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(0.0))) * _virtualToRoomSpace;
      float x = 0.0;
@@ -85,6 +85,9 @@ public:
     events.append(newEvents);
 
     for (int i = 0; i < events.size(); i++) {
+    	if(events[i]->getName() != "SynchedTime" && events[i]->getName() != "Wand_Tracker" && events[i]->getName() != "Head_Tracker") {
+    		//cout << "HEARD: " << events[i]->getName() << endl;
+    	}
       if (events[i]->getName() == "kbd_ESC_down") {
 	    // Exit the program.
         while(glGetError() != GL_NO_ERROR) {
@@ -163,90 +166,112 @@ public:
               _virtualToRoomSpace.translation = Vector3(0,0,0);
               toggled = !toggled;
             }
-      } else if (events[i]->getName() == "Wand_Btn1_down") {
-    	  	  //cout << "Wand btn 1 pressed." << endl;
-          } else if (events[i]->getName() == "Wand_Btn2_down") {
-        	  //cout << "Wand btn 2 pressed." << endl;
-          } else if (events[i]->getName() == "Wand_Btn3_down") {
-        	  //cout << "Wand btn 3 pressed." << endl;
-          } else if (events[i]->getName() == "Wand_Btn4_down") {
-        	  //cout << "Wand btn 4 pressed." << endl;
-          } else if (events[i]->getName() == "Wand_Btn6_down") {
-        	  //cout << "Wand btn 6 pressed." << endl;
-          } else if (events[i]->getName() == "Wand_Btn5_down") {
-        	  //cout << "Wand joystick btn pressed." << endl;
-          } else if (events[i]->getName() == "Wand_Btn6_down") {
-        	  //cout << "Wand trigger btn pressed." << endl;
-          } else if (events[i]->getName() == "Wand_Joystick_X") {
-        	  //cout << "Wand Joystick X = " << events[i]->get1DData() << endl;
-        	  joystick_x = events[i]->get1DData();
-        	  //-1,1
-          } else if (events[i]->getName() == "Wand_Joystick_Y") {
-        	  //cout << "Wand Joystick Y = " << events[i]->get1DData() << endl;
-        	  joystick_y = events[i]->get1DData();
-        	  //-1,1
-          } else if (events[i]->getName() == "Mouse_Pointer") {
-        	static Vector2 lastPos;
-            if (events[i]->get2DData() != lastPos) {
-            	//  cout << "New mouse position = " << events[i]->get2DData() << endl;
-            	lastPos = events[i]->get2DData();
-            }
-          } else if (events[i]->getName() == "Mouse_Left_Btn_down") {
-        	  //cout << "Mouse left btn pressed at position " << events[i]->get2DData() << endl;
-          } else if (beginsWith(events[i]->getName(), "kbd_")) {
+      } else if (events[i]->getName() == "Wand_Left_Button_down") {
+    	  if(prevEvent != "Wand_Left_Button_down") {
+    		  g_World.getTimeLine().setTrail(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
+    		  g_World.getTimeLine().setLead(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
+    	  }
+      } else if (events[i]->getName() == "Wand_Right_Button_down") {
+    	  if(prevEvent != "Wand_Right_Button_down") {
+    		  if(get_time_ui_active_index()>=0) {
+    	  	  	  set_time_ui_value(1);
+    	  	  }
+    	  }
+    	  //g_World.getTimeLine().setPlay(true, false);
+      } else if (events[i]->getName() == "Wand_Middle_Btn_down") {  //mapped to W
+    	  if(prevEvent != "Wand_Middle_Btn_down") {
+    		  if(get_time_ui_active_index()>=0) {
+    		  	  set_time_ui_value(-1);
+    	  	  }
+    	  }
+      } else if (events[i]->getName() == "Wand_Left_Btn_down") { // mapped to A
+    	  if(prevEvent != "Wand_Left_Btn_down") {
+    		  if(get_time_ui_active_index()>=0) {
+    		  	  get_previous_ui_active_index();
+    	  	  }
+    	  }
+      } else if (events[i]->getName() == "Wand_Right_Btn_down") { // mapped to D
+    	  if(prevEvent != "B0_down") {
+    		  if(get_time_ui_active_index()>=0) {
+    		  	  get_next_ui_active_index();
+    	  	  }
+    	  }
+      } else if (events[i]->getName() == "B6_down") { //mapped to S
+    	  if(prevEvent != "B16") {
+    		  if(get_time_ui_active_index()>=0) {
+    		  	  set_time_ui_value(1);
+    	  	  }
+    	  }
+      } else if (events[i]->getName() == "Wand_Joystick_X") {
+    	  //cout << "Wand Joystick X = " << events[i]->get1DData() << endl;
+    	  joystick_x = events[i]->get1DData();
+    	  //-1,1
+      } else if (events[i]->getName() == "Wand_Joystick_Y") {
+    	  //cout << "Wand Joystick Y = " << events[i]->get1DData() << endl;
+    	  joystick_y = events[i]->get1DData();
+    	  //-1,1
+      } else if (events[i]->getName() == "Mouse_Pointer") {
+    	  static Vector2 lastPos;
+    	  if (events[i]->get2DData() != lastPos) {
+            //  cout << "New mouse position = " << events[i]->get2DData() << endl;
+            lastPos = events[i]->get2DData();
+          }
+      } else if (events[i]->getName() == "Mouse_Left_Btn_down") {
+    	  //cout << "Mouse left btn pressed at position " << events[i]->get2DData() << endl;
+      } else if (beginsWith(events[i]->getName(), "kbd_")) {
         	  //cout << "Keyboard event 1: " << events[i]->getName() << endl;
         	  //cout << getCamera()->getHeadFrame() << endl;
         	  //cout << _virtualToRoomSpace << endl;
-          } else if (events[i]->getName() == "SpaceNav_Trans") {
+      } else if (events[i]->getName() == "SpaceNav_Trans") {
         	  //cout << "Keyboard event 2: " << events[i]->getName() << events[i]->get3DData() << endl;
-          } else if (events[i]->getName() == "SpaceNav_Rot") {
+      } else if (events[i]->getName() == "SpaceNav_Rot") {
         	  //cout << "Keyboard event 3: " << events[i]->getName() << events[i]->get3DData() << endl;
-          } else if (beginsWith(events[i]->getName(), "TNG_An")) {
+      } else if (beginsWith(events[i]->getName(), "TNG_An")) {
         	  //cout << events[i]->getName() << "  " << events[i]->get1DData() << endl;
-          } else if (events[i]->getName() == "SynchedTime") {
+      } else if (events[i]->getName() == "SynchedTime") {
         	  continue;
-          } else {
+      } else {
         	  /* This will print out the names of all events, but can be too
         	   * much if you are getting several tracker updates per frame.
         	   * Uncomment this to see everything: */
         	  //cout << events[i]->getName() << endl;
-          }
-
+      }
           // For debugging tracker coordinate systems, it can be useful to print out
           // tracker positions, like this:
-          if (events[i]->getName() == "Test_Tracker") {
+      if (events[i]->getName() == "Test_Tracker") {
         	  //cout << events[i]->getName() << " " << events[i]->getCoordinateFrameData().translation << endl;
-          }
+      }
+      prevEvent = events[i]->getName();
 
-          // Rotate
-          if (fabs(joystick_x) > 0.01) {
+      // Rotate
+      if (fabs(joystick_x) > 0.01) {
             //fprintf(stderr, "Joystick x: %lf\n", joystick_x);
             double angle = M_PI / 180.0 * joystick_x;
             angle /= 5.0;
             CoordinateFrame rotation = CoordinateFrame(Matrix3::fromEulerAnglesXYZ(0, angle, 0));
             _virtualToRoomSpace = rotation * _virtualToRoomSpace;
-          }
+      }
 
-          // Translate
-          if (fabs(joystick_y) > 0.0 && _trackerFrames.containsKey("Wand_Tracker") == true) {
+      // Translate
+      if (fabs(joystick_y) > 0.0 && _trackerFrames.containsKey("Wand_Tracker") == true) {
             if (joystick_y < 0) {
-              _virtualToRoomSpace.translation = 75.0f * Vector3(0,0,1);
+              _virtualToRoomSpace.translation = -0.01f * Vector3(0,0,1);
             } else {
               _virtualToRoomSpace.translation = Vector3(0,0,0);
               //_virtualToRoomSpace = CoordinateFrame(Vector3(0, 0, 0.25f*joystick_y)) * _virtualToRoomSpace;
               //_virtualToRoomSpace.translation -= .25f * joystick_y * _trackerFrames[string("Wand_Tracker")].lookVector();
             }
-          }
       }
-      float x = 0.0;
-      float y = 0.0;
-      float z = 0.0;
-      float yaw = 0.0;
-      float pitch = 0.0;
-      float roll = 0.0;
-      _virtualToRoomSpace.getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
-      g_Draw.SetCameraPosition(Vec3f(x, y, z), Vec3f(yaw, pitch, roll));
-      g_World.getTerrain().setNeedTerrainUpdate();
+    }
+    float x = 0.0;
+    float y = 0.0;
+    float z = 0.0;
+    float yaw = 0.0;
+    float pitch = 0.0;
+    float roll = 0.0;
+    _virtualToRoomSpace.getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
+    g_Draw.SetCameraPosition(Vec3f(x, y, z), Vec3f(yaw, pitch, roll));
+    g_World.getTerrain().setNeedTerrainUpdate();
   }
 
   void doGraphics(RenderDevice *rd)
@@ -310,7 +335,7 @@ public:
     /* Parameters for our light, including color and position */
     GLfloat ambient[] = {0.0, 0.0, 0.0, 1.0};
     GLfloat diffuse[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat position[] = {0.0, 3.0, 3.0, 0.0};
+    GLfloat position[] = {-130.0, -0.21, -45.0, 0.0};
     GLfloat lmodel_ambient[] = {0.2, 0.2, 0.2, 1.0};
     GLfloat local_view[] = {0.0};
 
@@ -371,6 +396,7 @@ protected:
   GFontRef          _font;
   MouseToTrackerRef _mouseToTracker;
   CoordinateFrame   _virtualToRoomSpace;
+  std::string prevEvent;
 };
 
 int main( int argc, char **argv )

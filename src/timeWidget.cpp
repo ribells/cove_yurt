@@ -22,6 +22,8 @@
 static string g_TimeString;
 static int g_TimeSel = 0;
 static int g_CurTime = 0;
+static int g_LeadSel = 0;
+static int g_TrailSel = 0;
 static Vec3f g_TWLocation = Vec3f(0.0, 0.0, 0.0);
 static Vec3f g_TWRotation = Vec3f(0.0, 0.0, 0.0);
 static int time_ui_active_index = 9;
@@ -97,8 +99,13 @@ void tm_time_ui(int iType, float x, float y, float z, float yaw, float pitch, fl
 	}
 
 	//Set the trail to be the max time initially
-	g_World.getTimeLine().setTrail(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
-
+	if(g_TrailSel==0) {
+		g_World.getTimeLine().setTrail(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
+	}
+	//Set the lead to be the max time initially
+	if(g_LeadSel==0) {
+		g_World.getTimeLine().setLead(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
+	}
 	//TO DO: Draw Labels for Current Values
 	//g_Draw.draw3DText("TESTING", Vec3f(130.0,3.0,47.0), 0, 0, true);
 	/*
@@ -179,13 +186,19 @@ int set_time_ui_value(int i) {
 	  case LEAD_TIME :
   	  	  if(i > 0) {
   	  		  dtime = g_World.getTimeLine().getLead()-timestep;
+  	  		  g_LeadSel = 1;
+  	  		  if(g_World.getTimeLine().getLead() > 0) {
+  	  			  g_World.getTimeLine().setLead(0);
+  	  		  }
+  	  		  //cout << dtime << " : " << (g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart()) << endl;
   	  		  if(dtime >= g_World.getTimeLine().getSelStart()) {
   	  			  g_World.getTimeLine().setLead(dtime);
   	  			  g_World.getDataSet().setLead(dtime);
   	  		  }
   	  	  } else {
   	  		  dtime = g_World.getTimeLine().getLead()+timestep;
-  	  		  if(dtime <= g_World.getTimeLine().getTime()) {
+  	  		  g_LeadSel = 1;
+  	  		  if(dtime <= g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart()) {
   	  			  g_World.getTimeLine().setLead(dtime);
   	  		  	  g_World.getDataSet().setLead(dtime);
   	  		  }
@@ -200,7 +213,8 @@ int set_time_ui_value(int i) {
   	  		  }
   	  	  } else {
   	  		  dtime = g_World.getTimeLine().getTrail()-timestep;
-  	  		  if(dtime >= g_World.getTimeLine().getTime()) {
+  	  		  if(dtime >= g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart()) {
+  	  			  g_TrailSel = 1;
   	  			  g_World.getTimeLine().setTrail(dtime);
   	  			  g_World.getDataSet().setTrail(dtime);
   	  		  }
@@ -363,8 +377,8 @@ void draw_lead_time_ui() {
 		glVertex3f(2.5f,0.0f,0.0f);
 	glEnd();
     glScalef(0.05, 0.05, 0.05);
-    float part_done = (g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart())/(g_World.getTimeLine().getFinish()-g_World.getTimeLine().getStart());
-    part_done-=(g_World.getTimeLine().getLead()/3600000);
+    float part_done = (g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart()-g_World.getTimeLine().getLead())/(g_World.getTimeLine().getFinish()-g_World.getTimeLine().getStart());
+    //cout << part_done << endl;
     if(part_done<0.0) {
     	part_done=0.0;
     }
@@ -391,8 +405,7 @@ void draw_trail_time_ui() {
 		glVertex3f(2.5f,0.0f,0.0f);
 	glEnd();
     glScalef(0.05, 0.05, 0.05);
-    float part_done = (g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart())/(g_World.getTimeLine().getFinish()-g_World.getTimeLine().getStart());
-    part_done+=(g_World.getTimeLine().getTrail()/3600000);
+    float part_done = (g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart() + g_World.getTimeLine().getTrail())/(g_World.getTimeLine().getFinish()-g_World.getTimeLine().getStart());
     if(part_done<0.0) {
     	part_done=0.0;
     }
