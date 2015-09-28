@@ -1117,7 +1117,6 @@ bool CData::readNetCDF(string fileName)
  =============================================================================== */
 bool CData::writeNetCDF(string fileName)
 {
-	/*
 	// When we create netCDF variables and dimensions, we get back an ID for each one.
 	int ncid;
 	int dimids[NC_MAX_VAR_DIMS];
@@ -1318,8 +1317,6 @@ bool CData::writeNetCDF(string fileName)
 		cout << ("Netcdf file written: " + fileName);
 
 	return true;
-	*/
-	return false;
 }
 
 /* =============================================================================
