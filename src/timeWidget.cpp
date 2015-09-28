@@ -65,7 +65,11 @@ void tm_time_ui(int iType, float x, float y, float z, float yaw, float pitch, fl
 	}
 
 	long int tm = 0;
-	g_TimeString = getNiceDateTimeString(g_World.getTimeLine().getTime());
+	//g_TimeString = getNiceDateTimeString(g_World.getTimeLine().getTime());
+	double start = 0.0;
+	double finish = 0.0;
+	g_World.getDataSet().getTimeBounds(start, finish);
+	g_TimeString = getNiceDateTimeString(start);
 
 	if (g_TimeSel == vTime.size()) {
 		if (g_TimeString == "") {
@@ -226,7 +230,7 @@ int set_time_ui_value(int i) {
   	  	  } else {
   	  		  g_World.getTimeLine().setSlower();
   	  	  }
-	  	  cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
+	  	  //cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
 	  	  break;
 	  case SLOW_DOWN :
 	  	  if(i > 0) {
@@ -234,7 +238,7 @@ int set_time_ui_value(int i) {
 	  	  } else {
 	  		  g_World.getTimeLine().setSlower();
 	  	  }
-	  	  cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
+	  	  //cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
 	  	  break;
 	  case PLAY_REVERSE :
 		  g_CurTime = (int) g_World.getTimeLine().getTime();
@@ -257,7 +261,7 @@ int set_time_ui_value(int i) {
 		  } else {
 			  g_World.getTimeLine().setFaster();
 		  }
-	  	  cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
+	  	  //cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
 	  	  break;
 	}
 }

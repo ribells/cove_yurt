@@ -47,8 +47,9 @@ public:
      // _virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
 
      // OTHERWISE, WRITE YOUR OWN STARTING VIEWPOINT HERE (location and then orientation - then do light below):
-     _virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.21,46.0)) * _virtualToRoomSpace;
-	 _virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(0.0))) * _virtualToRoomSpace;
+     //_virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.05,46.5)) * _virtualToRoomSpace;
+     _virtualToRoomSpace = CoordinateFrame(Vector3(0.0,-10.0,-90.0)) * _virtualToRoomSpace; //WORLDQUAKES
+	 //_virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(0.0))) * _virtualToRoomSpace;
      float x = 0.0;
      float y = 0.0;
      float z = 0.0;
@@ -239,7 +240,7 @@ public:
           // For debugging tracker coordinate systems, it can be useful to print out
           // tracker positions, like this:
       if (events[i]->getName() == "Test_Tracker") {
-        	  //cout << events[i]->getName() << " " << events[i]->getCoordinateFrameData().translation << endl;
+          //cout << events[i]->getName() << " " << events[i]->getCoordinateFrameData().translation << endl;
       }
       prevEvent = events[i]->getName();
 
@@ -333,9 +334,9 @@ public:
     rd->setObjectToWorldMatrix(_virtualToRoomSpace);
 
     /* Parameters for our light, including color and position */
-    GLfloat ambient[] = {0.0, 0.0, 0.0, 1.0};
+    GLfloat ambient[] = {1.0, 1.0, 1.0, 0.6};
     GLfloat diffuse[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat position[] = {-130.0, -0.21, -45.0, 0.0};
+    GLfloat position[] = {-130.0, 0.0, -45.0, 0.0};
     GLfloat lmodel_ambient[] = {0.2, 0.2, 0.2, 1.0};
     GLfloat local_view[] = {0.0};
 
@@ -370,7 +371,7 @@ public:
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
-    glDisable( GL_COLOR_MATERIAL );
+    glDisable(GL_COLOR_MATERIAL);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
@@ -418,7 +419,8 @@ int main( int argc, char **argv )
 	  g_Env.m_CurFilePath = "/users/guest461/test/Debug/";
   }
   g_Env.m_AppPath = g_Env.m_CurFilePath + "datasvr";
-  g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Earthquakes.cov";
+  g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Worldquakes.cov";
+  //g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Earthquakes.cov";
   g_Env.m_LocalCachePath = "cove_temp";
   cout << "Application folder is " + g_Env.m_AppPath + "\n";
   cout << "Local data folder is " + g_Env.m_AppPath + "\n";

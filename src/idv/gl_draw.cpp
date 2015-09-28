@@ -1141,7 +1141,6 @@ bool CDraw::drawGL()
 	if (bDrawing) {
 		return false;
 	}
-//	g_World.getTimeLine().setTrail(g_World.getTimeLine().getStart() + 12796674);
 //	printf("Drawing world at %f\n", g_World.getTimeLine().getSpeed());
 //	printf("Drawing world at %f\n", g_World.getTimeLine().getFrameTime());
 	g_Timers.startPerfTimer(GPU_PERF_TIMER);
@@ -1311,7 +1310,11 @@ bool CDraw::drawGL()
 		}
 		g_World.getTimeLine().setCurTime(temptime);
 		//printf("Drawing world at %f\n", temptime);
+		glRotatef(90.0, 1, 0, 0); //FOR WORLDQUAKES
+		glScalef(0.25f, 0.25f, 0.25f); //FOR WORLDQUAKES
 		g_World.getDataSet().Render(spd);
+		glScalef(1.0f/0.25f, 1.0f/0.25f, 1.0f/0.25f); //FOR WORLDQUAKES
+		glRotatef(-90.0, 1, 0, 0); //FOR WORLDQUAKES
 		g_Timers.pollTimer(DATA_RENDER_TIMER);
 	}
 
