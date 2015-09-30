@@ -47,8 +47,8 @@ public:
      // _virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
 
      // OTHERWISE, WRITE YOUR OWN STARTING VIEWPOINT HERE (location and then orientation - then do light below):
-     //_virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.05,46.5)) * _virtualToRoomSpace;
-     _virtualToRoomSpace = CoordinateFrame(Vector3(0.0,-10.0,-90.0)) * _virtualToRoomSpace; //WORLDQUAKES
+     _virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.21,46.0)) * _virtualToRoomSpace; //FOR AXIAL
+     //_virtualToRoomSpace = CoordinateFrame(Vector3(0.0,-10.0,-40.0)) * _virtualToRoomSpace; //FOR WORLDQUAKES
 	 //_virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(0.0))) * _virtualToRoomSpace;
      float x = 0.0;
      float y = 0.0;
@@ -169,7 +169,8 @@ public:
             }
       } else if (events[i]->getName() == "Wand_Left_Button_down") {
     	  if(prevEvent != "Wand_Left_Button_down") {
-    		  g_World.getTimeLine().setTrail(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
+    		  //g_World.getTimeLine().setTrail(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
+    		  g_World.getTimeLine().setTrail(0);
     		  g_World.getTimeLine().setLead(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
     	  }
       } else if (events[i]->getName() == "Wand_Right_Button_down") {
@@ -240,28 +241,30 @@ public:
           // For debugging tracker coordinate systems, it can be useful to print out
           // tracker positions, like this:
       if (events[i]->getName() == "Test_Tracker") {
-          //cout << events[i]->getName() << " " << events[i]->getCoordinateFrameData().translation << endl;
+        	  //cout << events[i]->getName() << " " << events[i]->getCoordinateFrameData().translation << endl;
       }
       prevEvent = events[i]->getName();
 
       // Rotate
       if (fabs(joystick_x) > 0.01) {
-            //fprintf(stderr, "Joystick x: %lf\n", joystick_x);
-            double angle = M_PI / 180.0 * joystick_x;
-            angle /= 5.0;
-            CoordinateFrame rotation = CoordinateFrame(Matrix3::fromEulerAnglesXYZ(0, angle, 0));
-            _virtualToRoomSpace = rotation * _virtualToRoomSpace;
+         //fprintf(stderr, "Joystick x: %lf\n", joystick_x);
+         double angle = M_PI / 180.0 * joystick_x;
+         angle /= 5.0;
+         CoordinateFrame rotation = CoordinateFrame(Matrix3::fromEulerAnglesXYZ(0, angle, 0));
+         _virtualToRoomSpace = rotation * _virtualToRoomSpace;
       }
 
       // Translate
       if (fabs(joystick_y) > 0.0 && _trackerFrames.containsKey("Wand_Tracker") == true) {
-            if (joystick_y < 0) {
-              _virtualToRoomSpace.translation = -0.01f * Vector3(0,0,1);
-            } else {
-              _virtualToRoomSpace.translation = Vector3(0,0,0);
-              //_virtualToRoomSpace = CoordinateFrame(Vector3(0, 0, 0.25f*joystick_y)) * _virtualToRoomSpace;
-              //_virtualToRoomSpace.translation -= .25f * joystick_y * _trackerFrames[string("Wand_Tracker")].lookVector();
-            }
+         if (joystick_y < 0) {
+            _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,-0.05)) * _virtualToRoomSpace;
+            //_virtualToRoomSpace.translation = -0.01f * Vector3(0,0,1);
+         } else {
+            //_virtualToRoomSpace.translation = Vector3(0,0,0);
+            _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,0.05)) * _virtualToRoomSpace;
+            //_virtualToRoomSpace = CoordinateFrame(Vector3(0, 0, 0.25f*joystick_y)) * _virtualToRoomSpace;
+            //_virtualToRoomSpace.translation -= .25f * joystick_y * _trackerFrames[string("Wand_Tracker")].lookVector();
+         }
       }
     }
     float x = 0.0;
@@ -287,7 +290,7 @@ public:
     if (_font.isNull()) {
     	std::string fontfile = VRApp::findVRG3DDataFile("eurostyle.fnt");
     	if ( FileSystem::exists( fontfile )) {
-    		std::cout << fontfile << std::endl;
+    		//std::cout << fontfile << std::endl;
     		_font = GFont::fromFile( fontfile );
     	}
     }
@@ -334,9 +337,9 @@ public:
     rd->setObjectToWorldMatrix(_virtualToRoomSpace);
 
     /* Parameters for our light, including color and position */
-    GLfloat ambient[] = {1.0, 1.0, 1.0, 0.6};
+    GLfloat ambient[] = {0.6, 0.6, 0.6, 1.0};
     GLfloat diffuse[] = {1.0, 1.0, 1.0, 1.0};
-    GLfloat position[] = {-130.0, 0.0, -45.0, 0.0};
+    GLfloat position[] = {-130.0, -0.21, -45.0, 0.0};
     GLfloat lmodel_ambient[] = {0.2, 0.2, 0.2, 1.0};
     GLfloat local_view[] = {0.0};
 
@@ -371,7 +374,7 @@ public:
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
-    glDisable(GL_COLOR_MATERIAL);
+    glDisable( GL_COLOR_MATERIAL );
 
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
@@ -412,20 +415,21 @@ int main( int argc, char **argv )
   //START SETTING UP THE COVE ENVIRONMENT (TO DO: use a configuration file for setup outside of compile)
   bool	bRunning = false;
   bool  bRunLocal = true;
-  cout << "Initializing COVE\n";
+  //cout << "From text.cpp: Initializing COVE\n";
   if(bRunLocal) {
 	  g_Env.m_CurFilePath = "/home/ribells/workspace/test/Debug/";
   } else {
-	  g_Env.m_CurFilePath = "/users/guest461/test/Debug/";
+	  g_Env.m_CurFilePath = "/users/guest461/workspace/test/Debug/"; //FOR TEST
+	  //g_Env.m_CurFilePath = "/users/guest461/data/guest461/worldquakes/";
   }
   g_Env.m_AppPath = g_Env.m_CurFilePath + "datasvr";
-  g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Worldquakes.cov";
-  //g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Earthquakes.cov";
-  g_Env.m_LocalCachePath = "cove_temp";
-  cout << "Application folder is " + g_Env.m_AppPath + "\n";
-  cout << "Local data folder is " + g_Env.m_AppPath + "\n";
-  cout << "Local cache folder is " + g_Env.m_LocalCachePath + "\n";
-  cout << "Data server is " + g_Env.m_COVEServerPath + "\n";
+  g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Earthquakes.cml";
+  //g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Worldquakes.cml"; //FOR WORLDQUAKES
+  g_Env.m_LocalCachePath = "/tmp";
+  //cout << "Application folder is " + g_Env.m_AppPath + "\n";
+  //cout << "Local data folder is " + g_Env.m_AppPath + "\n";
+  //cout << "Local cache folder is " + g_Env.m_LocalCachePath + "\n";
+  //cout << "Data server is " + g_Env.m_COVEServerPath + "\n";
 
   removedir(g_Env.m_LocalCachePath);
   makedir(g_Env.m_LocalCachePath);
@@ -436,10 +440,10 @@ int main( int argc, char **argv )
   if (!initSceneManager()) {
   	cout << "\nProblems initializing OpenGL functions. Application must exit\n";
   } else {
-  	cout << "\nScene Manager loaded and ready for action.\n";
+  	//cout << "\nFrom test.cpp: Scene Manager loaded and ready for action.\n";
   }
 
-  cout << "Python scripting is " + (string) (g_Set.m_PythonAvailable ? "" : "not ") + "available\n";
+  //cout << "From test.cpp: Python scripting is " + (string) (g_Set.m_PythonAvailable ? "" : "not ") + "available\n";
 
   g_Set.m_Projection = PROJ_GLOBE;
   g_World.cleanDBFileList();
