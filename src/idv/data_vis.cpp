@@ -546,14 +546,14 @@ void CDataLayer::setPointColor(int iPnt, int iSelectID, double dTrans)
 			clr = getUseGradient() ? getGradient().getColor(dval) : getColor();
 		}
 
-		float tempr = float(clr >> 24) / (float)0xFF;
-		float tempg = float(0xFF & (clr >> 16)) / (float)0xFF;
-		float tempb = float(0xFF & (clr >> 8)) / (float)0xFF;
+		float tempr = float(0xFF & (clr >> 0)) / (float)0xFF;
+		float tempg = float(0xFF & (clr >> 8)) / (float)0xFF;
+		float tempb = float(0xFF & (clr >> 16)) / (float)0xFF;
 
-		float colr[] = { tempr, tempb, tempg, 0.5};
+		float colr[] = { tempr, tempg, tempb, 0.5};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colr);
 
-		//USED OTHER ENDIAN:
+		//USES OTHER ENDIAN for Mac or Windows:
 		//glColor4ub(clrR(clr), clrG(clr), clrB(clr), dTrans * clrTrans(clr) * getTransparency() * 255.0);
 	}
 }
