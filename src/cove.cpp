@@ -11,6 +11,7 @@
 #include "idv/world.h"
 #include "idv/gl_draw.h"
 #include "timeWidget.h"
+#include "compassWidget.h"
 
 #include "scene/image.h"
 #include <FL/Fl_JPEG_Image.H>
@@ -70,11 +71,14 @@ void draw_cove(float x, float y, float z, float yaw, float pitch, float roll)
 	 * we draw all the content (picking up changes from animated elements),
 	 * and update the time user interface to show date/time change.
 	 */
+	glScalef(10.0f, 10.0f, 10.0f); //FOR AXIAL
 	g_World.updateTerrain();
 	g_Draw.drawGL();
-	//draw_decorations(); //AXIAL
-	draw_countries(); //WORLDQUAKES
+	draw_decorations(); //AXIAL
+	//draw_countries(); //WORLDQUAKES
+	glScalef(0.1f, 0.1f, 0.1f); //FOR AXIAL
 	tm_time_ui(0, x, y, z, yaw, pitch, roll);
+	tm_compass_ui(0, x, y, z, yaw, pitch, roll);
 }
 
 /*

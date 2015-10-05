@@ -47,9 +47,10 @@ public:
      // _virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
 
      // OTHERWISE, WRITE YOUR OWN STARTING VIEWPOINT HERE (location and then orientation - then do light below):
-     _virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.21,46.0)) * _virtualToRoomSpace; //FOR AXIAL
+     _virtualToRoomSpace = CoordinateFrame(Vector3(1300.0,-1.00,450.0)) * _virtualToRoomSpace; //FOR AXIAL
      //_virtualToRoomSpace = CoordinateFrame(Vector3(0.0,-10.0,-40.0)) * _virtualToRoomSpace; //FOR WORLDQUAKES
 	 //_virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(0.0))) * _virtualToRoomSpace;
+     //_virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.10,46.0)) * _virtualToRoomSpace; //ORIGINAL AXIAL
      float x = 0.0;
      float y = 0.0;
      float z = 0.0;
@@ -57,7 +58,7 @@ public:
      float pitch = 0.0;
      float roll = 0.0;
      _virtualToRoomSpace.getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
-     //if you choose a different viewpoint, update the COVE camera to be the same:
+     //if you choose a different viewpoint, update the COVE GPS-aware camera to be the same:
      g_Draw.SetCameraPosition(Vec3f(x, y, z), Vec3f(yaw, pitch, roll));
 
      // This is the background color for the world:
@@ -389,6 +390,8 @@ public:
     float pitch = 0.0;
     float roll = 0.0;
     _virtualToRoomSpace.getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
+    //Set the internal, GPS-aware camera
+    g_Draw.SetCameraPosition(Vec3f(x, y, z), Vec3f(yaw, pitch, roll));
 
     //All our drawing objects are from within the COVE program parts we've incorporated
     draw_cove(x, y, z, yaw, pitch, roll);
