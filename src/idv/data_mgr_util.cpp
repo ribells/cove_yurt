@@ -5,7 +5,7 @@
 
 #include "data_mgr.h"
 #include "utility.h"
-#include "netcdf.h"
+//#include "netcdf.h"
 
 /* =============================================================================
     Data Handling Class

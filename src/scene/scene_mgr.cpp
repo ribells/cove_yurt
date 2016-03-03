@@ -141,7 +141,7 @@ bool C3DSceneMgr::initSceneManager()
 
 	if (glBindBuffer &&	glBufferData && glBufferSubData && glDeleteBuffers && glGenBuffers
 		&&	glMapBuffer	&&	glUnmapBuffer && glCompressedTexImage2DARB && glGetCompressedTexImageARB)
-		cout << ("Using Vertex Buffer Objects and compressed textures.");
+		//cout << ("From scene_mgr.cpp: Using Vertex Buffer Objects and compressed textures.");
 	if (!glBindBuffer) 
 		cout << ("Vertex Buffer Objects are not available.");
 	if (!glCompressedTexImage2DARB)

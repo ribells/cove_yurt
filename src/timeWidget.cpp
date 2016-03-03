@@ -24,6 +24,8 @@ static int g_TimeSel = 0;
 static int g_CurTime = 0;
 static int g_LeadSel = 0;
 static int g_TrailSel = 0;
+static bool g_Animating = true;
+static bool g_Looping = true;
 static Vec3f g_TWLocation = Vec3f(0.0, 0.0, 0.0);
 static Vec3f g_TWRotation = Vec3f(0.0, 0.0, 0.0);
 static int time_ui_active_index = 9;
@@ -40,6 +42,8 @@ const static int PLAY_REVERSE = 7;
 const static int STOP_PLAY = 8;
 const static int PLAY_FORWARD = 9;
 const static int SPEED_UP = 10;
+const static int LOOP = 11;
+const static int ANIMATE = 12;
 
 /* =============================================================================
     Time Interface
@@ -65,12 +69,13 @@ void tm_time_ui(int iType, float x, float y, float z, float yaw, float pitch, fl
 	}
 
 	long int tm = 0;
-	//g_TimeString = getNiceDateTimeString(g_World.getTimeLine().getTime());
+	g_TimeString = getNiceDateTimeString(g_World.getTimeLine().getTime());
+	/*
 	double start = 0.0;
 	double finish = 0.0;
 	g_World.getDataSet().getTimeBounds(start, finish);
 	g_TimeString = getNiceDateTimeString(start);
-
+	*/
 	if (g_TimeSel == vTime.size()) {
 		if (g_TimeString == "") {
 			return;
@@ -243,6 +248,7 @@ int set_time_ui_value(int i) {
 	  case PLAY_REVERSE :
 		  g_CurTime = (int) g_World.getTimeLine().getTime();
 	  	  g_World.getTimeLine().setPlay(false, true);
+	  	  g_Animating = false;
 		  g_World.getTimeLine().setTime(g_CurTime);
 	  	  break;
 	  case STOP_PLAY :
@@ -263,6 +269,22 @@ int set_time_ui_value(int i) {
 		  }
 	  	  //cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
 	  	  break;
+	  case LOOP :
+		  if(i > 0) {
+			  g_Looping = true;
+		  } else {
+			  g_Looping = false;
+		  }
+	  	  //cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
+	  	  break;
+	  case ANIMATE :
+		  if(i > 0) {
+			  g_Animating = true;
+		  } else {
+			  g_Animating = false;
+		  }
+	  	  //cout << "Speed is " << g_World.getTimeLine().getSpeed() << "\n";
+	  	  break;
 	}
 }
 
@@ -271,7 +293,7 @@ int get_time_ui_active_index() {
 }
 
 int get_next_ui_active_index() {
-	if(time_ui_active_index == SPEED_UP) {
+	if(time_ui_active_index == ANIMATE) {
 		return set_time_ui_active_index(CURRENT_TIME);
 	} else {
 		return ++time_ui_active_index;
@@ -284,6 +306,14 @@ int get_previous_ui_active_index() {
 	} else {
 		return --time_ui_active_index;
 	}
+}
+
+bool tm_get_should_animate() {
+	return g_Animating;
+}
+
+bool tm_get_should_loop() {
+	return g_Looping;
 }
 
 /* =============================================================================
@@ -351,12 +381,19 @@ void draw_current_time_ui() {
     glPopMatrix();
 	glTranslatef(6.0, 1.9, 0.0);
 	glScalef(4.0, 4.0, 4.0);
+	g_CurTime = (int) g_World.getTimeLine().getTime();
+	g_TimeString = getNiceDateTimeString(g_World.getTimeLine().getTime());
 	draw_date();
 	glScalef(0.25, 0.25, 0.25);
 	glTranslatef(-46.0, -1.9, 0.0);
     part_done = (g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart())/(g_World.getTimeLine().getFinish()-g_World.getTimeLine().getStart());
-    if(part_done>1.0) {
-    	part_done=1.0;
+    if(part_done>=1.0) {
+    	if(g_Looping) {
+    		g_World.getTimeLine().setTime(g_World.getTimeLine().getSelStart());
+    		part_done=0.0;
+    	} else {
+    		part_done=1.0;
+    	}
     }
     if(part_done<0.0) {
     	part_done=0.0;
@@ -407,7 +444,7 @@ void draw_trail_time_ui() {
 	glBegin(GL_LINES);
 		glVertex3f(0.0f,0.0f,0.0f);
 		glVertex3f(2.5f,0.0f,0.0f);
-	glEnd();
+	glEnd();g_CurTime = (int) g_World.getTimeLine().getTime();
     glScalef(0.05, 0.05, 0.05);
     float part_done = (g_World.getTimeLine().getTime()-g_World.getTimeLine().getStart() + g_World.getTimeLine().getTrail())/(g_World.getTimeLine().getFinish()-g_World.getTimeLine().getStart());
     if(part_done<0.0) {
@@ -422,7 +459,7 @@ void draw_trail_time_ui() {
     } else {
     	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, white);
     }
-	draw_diamond();
+	draw_diamond();g_CurTime = (int) g_World.getTimeLine().getTime();
 	glPopMatrix();
 }
 
@@ -435,12 +472,35 @@ void draw_speed_ui() {
 		glVertex3f(0.0f,0.0f,0.0f);
 		glVertex3f(2.5f,0.0f,0.0f);
 	glEnd();
-    glScalef(0.05, 0.05, 0.05);
     float relative_speed = (g_World.getTimeLine().getSpeed()/1000000.0);
+	glTranslatef(2.7, 0.0, 0.0);
+	glScalef(0.25, 0.25, 0.25);
+	if(relative_speed > 512.0) {
+		draw_nine();
+	} else if(relative_speed > 256.0) {
+		draw_eight();
+	} else if(relative_speed > 128.0) {
+		draw_seven();
+	} else if(relative_speed > 64.0) {
+		draw_six();
+	} else if(relative_speed > 8.0) {
+		draw_five();
+	} else if(relative_speed > 4.0) {
+		draw_four();
+	} else if(relative_speed > 2.0) {
+		draw_three();
+	} else if(relative_speed > 1.0) {
+		draw_two();
+	} else {
+		draw_one();
+	}
+	glTranslatef(-10.8, 0.0, 0.0);
+    glScalef(0.20, 0.20, 0.20);
     if(relative_speed > 1.0) {
-    	relative_speed==1.0;
+    	glTranslatef(50.0, 0.0, 0.0);
+    } else {
+    	glTranslatef(50.0*relative_speed, 0.0, 0.0);
     }
-    glTranslatef(50.0*relative_speed, 0.0, 0.0);
     if(time_ui_active_index == CURRENT_SPEED) {
     	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, active);
     } else {
@@ -452,6 +512,7 @@ void draw_speed_ui() {
 
 void draw_play_controls_ui() {
 	float red[] = { 1.0, 0.0, 0.0, 0.5 };
+	float yellow[] = { 1.0, 1.0, 0.2, 0.5 };
 	float blue[] = { 0.5, 0.5, 1.0, 0.5 };
 	float green[] = { 0.0, 1.0, 0.0, 0.5 };
 	glPushMatrix();
@@ -494,6 +555,31 @@ void draw_play_controls_ui() {
     glRotatef(180.0, 0, 1, 0);
     glTranslatef(0.0, 0.0, 8.0);
     draw_pyramid();
+    if(time_ui_active_index == LOOP) {
+    	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, active);
+    } else {
+    	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, yellow);
+    }
+    glTranslatef(1.0, 0.0, 2.0);
+    glRotatef(-90.0, 0, 1, 0);
+    if(g_Looping) {
+    	glLineWidth(4.0f);
+    } else {
+    	glLineWidth(2.0f);
+    }
+    draw_L();
+    if(time_ui_active_index == ANIMATE) {
+    	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, active);
+    } else {
+    	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, yellow);
+    }
+    glTranslatef(1.5, 0.0, 0.0);
+    if(g_Animating) {
+    	glLineWidth(4.0f);
+    } else {
+    	glLineWidth(2.0f);
+    }
+    draw_A();
 	//g_World.getTimeLine().setSlower();
 	glPopMatrix();
 }
@@ -782,5 +868,27 @@ void draw_zero()
 		glVertex3f(0.1f,0.0f,0.0f);
 		glVertex3f(0.9f,0.0f,0.0f);
 		glVertex3f(0.9f,1.0f,0.0f);
+	glEnd();
+}
+
+void draw_L()
+{
+	glBegin(GL_LINE_STRIP);
+		glVertex3f(0.1f,1.0f,0.0f);
+		glVertex3f(0.1f,0.0f,0.0f);
+		glVertex3f(0.7f,0.0f,0.0f);
+	glEnd();
+}
+
+void draw_A()
+{
+	glBegin(GL_LINE_STRIP);
+		glVertex3f(0.1f,0.0f,0.0f);
+		glVertex3f(0.1f,1.0f,0.0f);
+		glVertex3f(0.9f,1.0f,0.0f);
+		glVertex3f(0.9f,0.5f,0.0f);
+		glVertex3f(0.1f,0.5f,0.0f);
+		glVertex3f(0.9f,0.5f,0.0f);
+		glVertex3f(0.9f,0.0f,0.0f);
 	glEnd();
 }

@@ -122,6 +122,16 @@ void CWorld::gotoViewTime(CView &View)
 	getDataSet().setLead(View.getLead());
 	getDataSet().setTrail(View.getTrail());
 	getTimeLine().resetSpeed();
+	//SLOW THE WORLD STARTING SPEED DOWN
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
+	getTimeLine().setSlower();
 }
 
 /* =============================================================================

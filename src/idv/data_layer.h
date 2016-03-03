@@ -484,7 +484,7 @@ public:
 	dtime getOffsetStart() const { return getWorldTimefromData(m_Start); }
 	dtime getOffsetFinish() const { return getWorldTimefromData(m_Finish); }
 
-	//called by ui so convert time
+	//called by ui so covert time
 	void setSelStart(double t) { m_SelStart = getDataTimefromWorld(t); }
 	void setSelFinish(double t) { m_SelFinish = getDataTimefromWorld(t); }
 	void setLead(double t) { m_Lead = t/m_TimeStep; }

@@ -475,7 +475,7 @@ bool CLayout::readFile(string fileName)
 	//  this opens and parses the XML file and checks the version
 	if (!fileexists(fileName))
 	{
-		cout << ("Could not open file " + fileName);
+		//cout << "From layout_xml.cpp: Could not open file " + fileName;
 		return false;
 	}
 
@@ -665,7 +665,7 @@ bool CLayout::readKMLFile(string fileName)
 	//  this opens and parses the XML file and checks the version
 	if (!fileexists(fileName))
 	{
-		cout << ("Could not open file " + fileName);
+		//cout << "From layout_xml.cpp: Could not open file " + fileName;
 		return false;
 	}
 

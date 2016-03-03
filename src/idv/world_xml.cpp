@@ -2042,7 +2042,7 @@ bool CWorld::readCoveFile(string fileName, bool bImport)
 	if (!getHide()) 
 		g_Env.m_CurFilePath = getFilePath(strLocal);
 
-	cout << "\nOpening COVE file: " + fileName + "\n";
+	//cout << "\nFrom world_xml.cpp: Opening COVE file: " + fileName + "\n";
 
 	XMLResults	pResults;
 	xn0 = XMLNode::parseFile(strLocal.c_str(), "World", &pResults);
@@ -2087,7 +2087,7 @@ bool CWorld::readCoveFile(string fileName, bool bImport)
 
 	// check to see if we have active textures and create them if
 	// need to do this before loading objects so height is correct
-	cout << "\nBuilding Terrain\n";
+	//cout << "\nFrom world_xml.cpp: Building Terrain\n";
 
 	if (m_LoadViewActive)
 	{
@@ -2112,7 +2112,7 @@ bool CWorld::readCoveFile(string fileName, bool bImport)
 	if (iVis == -1 && getVisSet().getCnt() > 0) iVis = 0;
 	getVisSet().setCur(iVis);
 
-	cout << "Creating Initial View\n";
+	//cout << "From world_xml.cpp: Creating Initial View\n";
 
 	setLink(strLink);
 	setLocalFilePath(strLocal);
@@ -2658,7 +2658,7 @@ bool CWorld::readKMLImageFile(string fileName)
 	//  this opens and parses the XML file and checks the version
 	if (!fileexists(fileName))
 	{
-		cout << ("Could not open file " + fileName);
+		//cout << "From world_xml.cpp: Could not open file " + fileName;
 		return false;
 	}
 
@@ -2854,7 +2854,7 @@ bool CWorld::cleanDBFileList()
 
 	if (!fileexists(strPath))
 	{
-		cout << ("Could not open file " + strPath);
+		cout << "From world_xml.cpp: Could not open file " + strPath;
 		return false;
 	}
 
@@ -2866,7 +2866,7 @@ bool CWorld::cleanDBFileList()
 		return false;
 	}
 
-	cout << ("Clearing file cache of old files");
+	cout << "Clearing file cache of old files\n";
 	clean_file_cache_r(xn0);
 
 	return true;
@@ -2882,7 +2882,7 @@ string CWorld::cache_DBFile()
 	if (g_Env.m_Internet) delfile(strPath);
 	if (!getWebFile(strWeb, strPath))
 	{
-		cout << ("\nUnable to get the COVE server data list.\n");
+		//cout << "\nFrom world_xml.cpp: Unable to get the COVE server data list.\n";
 		return "";
 	}
 
@@ -2995,7 +2995,7 @@ bool CWorld::readSessionFile(string fileName)
 	//  this opens and parses the XML file and checks the version
 	if (!fileexists(fileName))
 	{
-		cout << ("Could not open file " + fileName);
+		cout << "From world_xml.cpp: Could not open file " + fileName;
 		return false;
 	}
 

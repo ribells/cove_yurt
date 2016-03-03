@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#include "netcdf.h"
+//#include "netcdf.h"
 
 #include "utility.h"
 #include "scene/scene_mgr.h"
@@ -444,7 +444,7 @@ bool CDataLayer::setActive(bool bActive)
 			bool bSuccess = false;
 			CDataPtr newData = new CData();
 			newData->setTimeFormat(getTimeFormat());
-			cout << "\n - loading dataset: " + strLocal;
+			//cout << "\nFrom data_layer.cpp: - loading dataset: " + strLocal;
 			if (getExt(strLocal) == ".bil" || getExt(strLocal) == ".grd" || getExt(strLocal) == ".asc")
 			{
 				newData->setLoadAsTerrain(false);

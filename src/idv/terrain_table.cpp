@@ -76,7 +76,7 @@ bool CTextureLayer::setActive(bool bActive)
 	setLocalFilePath(strLocal);
 
 	if (strLocal == "") strLocal = m_Name;
-	cout << "\n - loading texture: " + strLocal;
+	//cout << "\nFrom terrain_table.cpp - loading texture: " + strLocal;
 
 	setLoaded(true);
 	return true;
@@ -316,7 +316,7 @@ bool CGradient::updateMap()
 	{
 		string	strSupported[] = { ".bmp", ".jpg", ".png", "" };
 		string	strLocal = cacheWebFiles(m_File[i], "textures", strSupported);
-		cout << "\n - loading gradient: " + strLocal;
+		//cout << "\nFrom terrain_table.cpp: - loading gradient: " + strLocal;
 
 		if (getExt(strLocal) == ".jpg" || getExt(strLocal) == ".jpeg")
 			pImg = new Fl_JPEG_Image(strLocal.c_str());

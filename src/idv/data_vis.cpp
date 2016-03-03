@@ -553,7 +553,7 @@ void CDataLayer::setPointColor(int iPnt, int iSelectID, double dTrans)
 		float colr[] = { tempr, tempg, tempb, 0.5};
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colr);
 
-		//USES OTHER ENDIAN for Mac or Windows:
+		//USED OTHER ENDIAN for Mac or Windows:
 		//glColor4ub(clrR(clr), clrG(clr), clrB(clr), dTrans * clrTrans(clr) * getTransparency() * 255.0);
 	}
 }

@@ -798,7 +798,7 @@ bool CLayoutTypes::readFile(string fileName)
 		strLocal = g_Env.m_CurFilePath + strLocal;
 	if (!fileexists(strLocal))
 	{
-		cout << "Could not open file " + strLocal;
+		//cout << "From layouttypes_xml.cpp: Could not open file " + strLocal;
 		return false;
 	}
 

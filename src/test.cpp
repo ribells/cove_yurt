@@ -9,6 +9,7 @@
 #include <GL/glut.h>
 #include "timer.h"
 #include "timeWidget.h"
+#include "compassWidget.h"
 #include "idv/world.h"
 #include "idv/gl_draw.h"
 
@@ -47,10 +48,11 @@ public:
      // _virtualToRoomSpace = CoordinateFrame(Vector3(look_at[0], look_at[1], look_at[2])) * _virtualToRoomSpace;
 
      // OTHERWISE, WRITE YOUR OWN STARTING VIEWPOINT HERE (location and then orientation - then do light below):
-     _virtualToRoomSpace = CoordinateFrame(Vector3(1300.0,-1.00,450.0)) * _virtualToRoomSpace; //FOR AXIAL
+     _virtualToRoomSpace = CoordinateFrame(Vector3(1300.0,0.8,460.0)) * _virtualToRoomSpace; //FOR AXIAL in Yurt
      //_virtualToRoomSpace = CoordinateFrame(Vector3(0.0,-10.0,-40.0)) * _virtualToRoomSpace; //FOR WORLDQUAKES
+     //_virtualToRoomSpace = CoordinateFrame(Vector3(1300.0,-1.0,460.0)) * _virtualToRoomSpace; //FOR AXIAL on Laptop
 	 //_virtualToRoomSpace = CoordinateFrame(Matrix3::fromAxisAngle(Vector3(0,1,0), toRadians(0.0))) * _virtualToRoomSpace;
-     //_virtualToRoomSpace = CoordinateFrame(Vector3(130.0,-0.10,46.0)) * _virtualToRoomSpace; //ORIGINAL AXIAL
+     //_virtualToRoomSpace = CoordinateFrame(Vector3(130.0,1.5,46.0)) * _virtualToRoomSpace; //FOR AXIAL ORIGINAL
      float x = 0.0;
      float y = 0.0;
      float z = 0.0;
@@ -87,7 +89,8 @@ public:
     events.append(newEvents);
 
     for (int i = 0; i < events.size(); i++) {
-    	if(events[i]->getName() != "SynchedTime" && events[i]->getName() != "Wand_Tracker" && events[i]->getName() != "Head_Tracker") {
+    	if(events[i]->getName() != "SynchedTime" && events[i]->getName() != "Wand_Tracker" && events[i]->getName() != "Head_Tracker" &&
+    	   events[i]->getName() != "aimon_13" && events[i]->getName() != "aimo_14" && events[i]->getName() != "aimon_15" && events[i]->getName() != "aimon_16") {
     		//cout << "HEARD: " << events[i]->getName() << endl;
     	}
       if (events[i]->getName() == "kbd_ESC_down") {
@@ -152,8 +155,10 @@ public:
       } else if (events[i]->getName() == "kbd_T_down") {
     	  if(get_time_ui_active_index() < 0) {
     		  show_layout_timeline(true);
+    		  show_layout_compass(true);
     	  } else {
     		  show_layout_timeline(false);
+    		  show_layout_compass(false);
     	  }
       } else if (events[i]->getName() == "kbd_SHIFT_UP_down") {
     	  _virtualToRoomSpace = CoordinateFrame(Vector3(0,0.01,0)) * _virtualToRoomSpace;
@@ -168,39 +173,48 @@ public:
               _virtualToRoomSpace.translation = Vector3(0,0,0);
               toggled = !toggled;
             }
-      } else if (events[i]->getName() == "Wand_Left_Button_down") {
-    	  if(prevEvent != "Wand_Left_Button_down") {
+      } else if (events[i]->getName() == "B07_down") { //mapped to button 8
+    	  if(prevEvent != "B07_down") {
     		  //g_World.getTimeLine().setTrail(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
     		  g_World.getTimeLine().setTrail(0);
     		  g_World.getTimeLine().setLead(g_World.getTimeLine().getFinish() - g_World.getTimeLine().getSelStart());
     	  }
-      } else if (events[i]->getName() == "Wand_Right_Button_down") {
-    	  if(prevEvent != "Wand_Right_Button_down") {
+      } else if (events[i]->getName() == "aimon_03") { //mapped to button 1
+    	  if(prevEvent != "aimon_03") {
     		  if(get_time_ui_active_index()>=0) {
     	  	  	  set_time_ui_value(1);
     	  	  }
     	  }
-    	  //g_World.getTimeLine().setPlay(true, false);
-      } else if (events[i]->getName() == "Wand_Middle_Btn_down") {  //mapped to W
+      } else if (events[i]->getName() == "aimon_04") { //mapped to button 2
+    	  if(prevEvent != "aimon_04") {
+    		  if(get_time_ui_active_index()>=0) {
+    		  	  set_time_ui_value(-1);
+    	  	  }
+    	  }
+      } else if (events[i]->getName() == "Wand_Middle_Btn_down") {  //mapped to button 4 (W)
     	  if(prevEvent != "Wand_Middle_Btn_down") {
     		  if(get_time_ui_active_index()>=0) {
     		  	  set_time_ui_value(-1);
     	  	  }
     	  }
-      } else if (events[i]->getName() == "Wand_Left_Btn_down") { // mapped to A
-    	  if(prevEvent != "Wand_Left_Btn_down") {
+      } else if (events[i]->getName() == "B05_down") { // mapped to button 7 (A)
+    	  if(prevEvent != "aimon_07" && prevEvent != "B05_down") {
     		  if(get_time_ui_active_index()>=0) {
     		  	  get_previous_ui_active_index();
     	  	  }
     	  }
-      } else if (events[i]->getName() == "Wand_Right_Btn_down") { // mapped to D
-    	  if(prevEvent != "B0_down") {
+      } else if (events[i]->getName() == "B06_down") { // mapped to button 5 (D)
+    	  if(prevEvent != "aimon_08" && prevEvent != "B06_down") {
     		  if(get_time_ui_active_index()>=0) {
     		  	  get_next_ui_active_index();
+    		  	  //TEMPORARY BDC
+    		  	  int curTime = (int) g_World.getTimeLine().getTime();
+    		  	  g_World.getTimeLine().setPlay(true, false);
+    		  	  g_World.getTimeLine().setTime(curTime);
     	  	  }
     	  }
-      } else if (events[i]->getName() == "B6_down") { //mapped to S
-    	  if(prevEvent != "B16") {
+      } else if (events[i]->getName() == "B04_down") { //mapped to button 6 (S)
+    	  if(prevEvent != "B04_down") {
     		  if(get_time_ui_active_index()>=0) {
     		  	  set_time_ui_value(1);
     	  	  }
@@ -250,19 +264,19 @@ public:
       if (fabs(joystick_x) > 0.01) {
          //fprintf(stderr, "Joystick x: %lf\n", joystick_x);
          double angle = M_PI / 180.0 * joystick_x;
-         angle /= 5.0;
+         angle /= 20.0;
          CoordinateFrame rotation = CoordinateFrame(Matrix3::fromEulerAnglesXYZ(0, angle, 0));
          _virtualToRoomSpace = rotation * _virtualToRoomSpace;
       }
 
-      // Translate
+      // Translate#include "timeWidget.h"
       if (fabs(joystick_y) > 0.0 && _trackerFrames.containsKey("Wand_Tracker") == true) {
          if (joystick_y < 0) {
-            _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,-0.05)) * _virtualToRoomSpace;
+            _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,-0.001)) * _virtualToRoomSpace;
             //_virtualToRoomSpace.translation = -0.01f * Vector3(0,0,1);
          } else {
             //_virtualToRoomSpace.translation = Vector3(0,0,0);
-            _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,0.05)) * _virtualToRoomSpace;
+            _virtualToRoomSpace = CoordinateFrame(Vector3(0,0,0.001)) * _virtualToRoomSpace;
             //_virtualToRoomSpace = CoordinateFrame(Vector3(0, 0, 0.25f*joystick_y)) * _virtualToRoomSpace;
             //_virtualToRoomSpace.translation -= .25f * joystick_y * _trackerFrames[string("Wand_Tracker")].lookVector();
          }
@@ -330,7 +344,8 @@ public:
      * the room, thus it never changes as your program runs. However,
      * it is often convenient to move objects around in a virtual
      * space that can change relative to the screen. For these
-     * objects, we put a virtual to room space transform on the OpenGL
+     * objects, we put a virtual to room space tran
+     * sform on the OpenGL
      * matrix stack before drawing them, as is done here: */
 
     rd->disableLighting();
@@ -390,11 +405,12 @@ public:
     float pitch = 0.0;
     float roll = 0.0;
     _virtualToRoomSpace.getXYZYPRDegrees(x, y, z, yaw, pitch, roll);
-    //Set the internal, GPS-aware camera
+    //if you choose a different viewpoint, update the COVE GPS-aware camera to be the same:
     g_Draw.SetCameraPosition(Vec3f(x, y, z), Vec3f(yaw, pitch, roll));
 
     //All our drawing objects are from within the COVE program parts we've incorporated
     draw_cove(x, y, z, yaw, pitch, roll);
+
     rd->popState();
   }
 
@@ -417,22 +433,23 @@ int main( int argc, char **argv )
 
   //START SETTING UP THE COVE ENVIRONMENT (TO DO: use a configuration file for setup outside of compile)
   bool	bRunning = false;
-  bool  bRunLocal = true;
+  bool  bRunLocal = false;
   //cout << "From text.cpp: Initializing COVE\n";
   if(bRunLocal) {
 	  g_Env.m_CurFilePath = "/home/ribells/workspace/test/Debug/";
   } else {
-	  g_Env.m_CurFilePath = "/users/guest461/workspace/test/Debug/"; //FOR TEST
-	  //g_Env.m_CurFilePath = "/users/guest461/data/guest461/worldquakes/";
+	  g_Env.m_CurFilePath = "/users/bcampbel/workspace/test/Debug/"; //FOR TEST
+	  //g_Env.m_CurFilePath = "/users/bcampbel/data/guest461/worldquakes/"; //BUILD for data directory
   }
   g_Env.m_AppPath = g_Env.m_CurFilePath + "datasvr";
   g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Earthquakes.cml";
   //g_Set.m_StartupFile = g_Env.m_CurFilePath + "datasvr/worlds/Worldquakes.cml"; //FOR WORLDQUAKES
   g_Env.m_LocalCachePath = "/tmp";
-  //cout << "Application folder is " + g_Env.m_AppPath + "\n";
-  //cout << "Local data folder is " + g_Env.m_AppPath + "\n";
-  //cout << "Local cache folder is " + g_Env.m_LocalCachePath + "\n";
-  //cout << "Data server is " + g_Env.m_COVEServerPath + "\n";
+  cout << "Application folder is " + g_Env.m_AppPath + "\n";
+  cout << "Local data folder is " + g_Env.m_AppPath + "\n";
+  cout << "Local cache folder is " + g_Env.m_LocalCachePath + "\n";
+  cout << "Data server is " + g_Env.m_COVEServerPath + "\n";
+  g_Set.m_FogFactor = 0.25;
 
   removedir(g_Env.m_LocalCachePath);
   makedir(g_Env.m_LocalCachePath);

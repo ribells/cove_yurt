@@ -16,6 +16,8 @@ int get_previous_ui_active_index();
 int get_time_ui_current_time();
 int set_time_ui_active_index(int i);
 int set_time_ui_value(int i);
+bool tm_get_should_animate();
+bool tm_get_should_loop();
 void show_layout_timeline(bool bShow);
 
 void draw_current_time_ui();
@@ -40,5 +42,7 @@ void draw_seven();
 void draw_eight();
 void draw_nine();
 void draw_zero();
+void draw_L();
+void draw_A();
 
 #endif /* TIMEWIDGET_H_ */

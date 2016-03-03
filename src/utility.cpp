@@ -218,7 +218,7 @@ bool makedir(string newdir)
 		*p = 0;
 		if (mkdir(buffer, 0755) == -1)
 		{
-			printf("could not create directory %s\n", buffer);
+			//printf("From utility.cpp: could not create directory %s\n", buffer);
 			free(buffer);
 			return false;
 		}

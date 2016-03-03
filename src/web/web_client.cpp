@@ -225,7 +225,7 @@ bool web_func::getWebFile(string strWebPath, string strPath, string strAuth, int
 	{
 		if (pStatus)
 			*pStatus = THREAD_FAIL;
-		cout << ("Unable to create local file " + strLocalPath);
+		//cout << "From web_client.cpp: Unable to create local file " + strLocalPath;
 		return false;
 	}
 

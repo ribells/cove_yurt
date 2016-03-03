@@ -22769,12 +22769,14 @@ namespace cimg_library {
       }
 
       // Error handling callback for png file reading
+      /* BDC
       if (setjmp(png_jmpbuf(png_ptr))){
         if (!file) cimg::fclose(nfile);
         png_destroy_read_struct(&png_ptr, &end_info, (png_infopp)0);
         throw CImgIOException("CImg<%s>::load_png() : File '%s', unknown fatal error.",
                               pixel_type(),filename?filename:"(FILE*)");
       }
+      */
       png_init_io(png_ptr, nfile);
       png_set_sig_bytes(png_ptr, 8);
 
@@ -22782,8 +22784,7 @@ namespace cimg_library {
       png_read_info(png_ptr, info_ptr);
       png_uint_32 W, H;
       int bit_depth, color_type, interlace_type;
-      png_get_IHDR(png_ptr, info_ptr, &W, &H, &bit_depth, &color_type, &interlace_type,
-                   int_p_NULL, int_p_NULL);
+      png_get_IHDR(png_ptr, info_ptr, &W, &H, &bit_depth, &color_type, &interlace_type, 0, 0);
       int new_bit_depth = bit_depth;
       int new_color_type = color_type;
 
@@ -22794,8 +22795,8 @@ namespace cimg_library {
         new_bit_depth = 8;
       }
       if (new_color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8){
-        png_set_gray_1_2_4_to_8(png_ptr);
-        new_bit_depth = 8;
+        //png_set_gray_1_2_4_to_8(png_ptr);  BDC
+        //new_bit_depth = 8;                 BDC
       }
       if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
         png_set_tRNS_to_alpha(png_ptr);
@@ -25038,13 +25039,14 @@ namespace cimg_library {
         throw CImgIOException("CImg<%s>::save_png() : File '%s', error when initializing 'info_ptr' data structure.",
                               pixel_type(),filename?filename:"(unknown)");
       }
+      /* BDC
       if (setjmp(png_jmpbuf(png_ptr))){
         png_destroy_write_struct(&png_ptr, &info_ptr);
         if (!file) cimg::fclose(nfile);
         throw CImgIOException("CImg<%s>::save_png() : File '%s', unknown fatal error.",
                               pixel_type(),filename?filename:"(unknown)");
       }
-
+	  */
       png_init_io(png_ptr, nfile);
       png_uint_32 width = dimx();
       png_uint_32 height = dimy();

@@ -1,11 +1,11 @@
 /* =============================================================================
-	File: data.cpp
+	File: data_mgr.cpp
 
  =============================================================================== */
 
 #include <string.h>
 #include "xmlParser.h"
-#include "netcdf.h"
+//#include "netcdf.h"
 #include "data_mgr.h"
 #include "utility.h"
 #include "timer.h"
@@ -928,6 +928,7 @@ bool CData::resetCoordVars(int iVar)
  =============================================================================== */
 bool CData::readNetCDF_Raw(string fileName)
 {
+	/*
 	int				ncdfid;					//  read netCDF file handle
 	int				dim_array[MAX_NC_DIMS]; //  size of selected variable dimensions
 	int				ndims, nvars, natts;	// # of selected variable dimensions
@@ -1065,6 +1066,8 @@ bool CData::readNetCDF_Raw(string fileName)
 
 	g_Timers.stopPerfTimer(IO_PERF_TIMER);
 	return true;
+	*/
+	return false;
 }
 
 /* =============================================================================
@@ -1117,6 +1120,7 @@ bool CData::readNetCDF(string fileName)
  =============================================================================== */
 bool CData::writeNetCDF(string fileName)
 {
+	/*
 	// When we create netCDF variables and dimensions, we get back an ID for each one.
 	int ncid;
 	int dimids[NC_MAX_VAR_DIMS];
@@ -1317,6 +1321,8 @@ bool CData::writeNetCDF(string fileName)
 		cout << ("Netcdf file written: " + fileName);
 
 	return true;
+	*/
+	return false;
 }
 
 /* =============================================================================

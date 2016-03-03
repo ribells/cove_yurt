@@ -661,7 +661,7 @@ bool CTerrainTile::updateTerrainTexture(int iObj)
 	*/
 	if (iTxRet == -1)
 	{
-		cout << ("Error loading texture for terrain");
+		cout << "Error loading texture for terrain";
 		if (strPath.size() && filesize(strPath) < 10000) 
 			delfile(strPath);
 		return false;

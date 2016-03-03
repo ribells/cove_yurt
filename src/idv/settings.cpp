@@ -1080,7 +1080,7 @@ bool CSettings::readFile(string strPath)
 
 	if (!fileexists(strPath))
 	{
-		cout << ("Could not open file " + strPath + ". Using default settings");
+		cout << "Could not open file " + strPath + ". Using default settings";
 		return false;
 	}
 
@@ -1088,7 +1088,7 @@ bool CSettings::readFile(string strPath)
 	xn0 = XMLNode::parseFile(strPath.c_str(), "World", &pResults);
 	if (pResults.error != eXMLErrorNone)
 	{
-		cout << ("The settings file is an invalid format. Using default settings");
+		cout << "The settings file is an invalid format. Using default settings";
 		return false;
 	}
 

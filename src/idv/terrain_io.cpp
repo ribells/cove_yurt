@@ -3,7 +3,7 @@
 
  =============================================================================== */
 
-#include "netcdf.h"
+//#include "netcdf.h"
 
 #include <string.h>
 #include "terrain.h"

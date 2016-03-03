@@ -16,6 +16,9 @@
 #include "scene/image.h"
 #include <FL/Fl_JPEG_Image.H>
 
+//----[ static global variables ]----//
+static float g_AnimateAngle = 0.0f;
+
 void draw(void);
 void draw_decorations(void);
 void draw_countries(void);
@@ -71,12 +74,24 @@ void draw_cove(float x, float y, float z, float yaw, float pitch, float roll)
 	 * we draw all the content (picking up changes from animated elements),
 	 * and update the time user interface to show date/time change.
 	 */
-	glScalef(10.0f, 10.0f, 10.0f); //FOR AXIAL
+	glScalef(10.f, 10.f, 10.f); //AXIAL
 	g_World.updateTerrain();
+	if(tm_get_should_animate()) {
+		glTranslatef(-130.0, 0.08, -46.0);
+		glRotatef(g_AnimateAngle, 0, 1, 0);
+		//g_AnimateAngle += 0.2;
+		g_AnimateAngle += .02;
+		glTranslatef(130.0, -0.08, 46.0);
+	}
 	g_Draw.drawGL();
 	draw_decorations(); //AXIAL
 	//draw_countries(); //WORLDQUAKES
-	glScalef(0.1f, 0.1f, 0.1f); //FOR AXIAL
+	if(tm_get_should_animate()) {
+		glTranslatef(-130.0, 0.08, -46.0);
+		glRotatef(-g_AnimateAngle, 0, 1, 0);
+		glTranslatef(130.0, -0.08, 46.0);
+	}
+	glScalef(1.0f/10.f, 1.0f/10.f, 1.0f/10.f); //AXIAL
 	tm_time_ui(0, x, y, z, yaw, pitch, roll);
 	tm_compass_ui(0, x, y, z, yaw, pitch, roll);
 }
@@ -105,7 +120,7 @@ void draw_decorations(void)
 
 	glPushMatrix();
 	glTranslatef(-130.0, 0.08, -46.0);
-/*
+/*glTranslatef(-130.0, 0.08, -46.0);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, blue);
 	glEnable(GL_TEXTURE_2D);
 	glBegin(GL_QUADS);
@@ -183,7 +198,7 @@ void draw_decorations(void)
 	glBegin(GL_LINES);
 		glVertex3f(-0.0089f,0.1f,0.04532f);
 		glVertex3f(-0.0089f,-0.2f,0.04532f);
-	glEnd();
+	glEnd();glTranslatef(-130.0, 0.08, -46.0);
 	glBegin(GL_LINES);
 		glVertex3f(0.0203f,0.1f,0.05042f);
 		glVertex3f(0.0203f,-0.2f,0.05042f);
