@@ -30,6 +30,8 @@ void draw_cube();
 void draw_pyramid();
 void draw_diamond();
 
+void draw_labels();
+
 void draw_date();
 void draw_hyphen();
 void draw_one();
@@ -44,5 +46,13 @@ void draw_nine();
 void draw_zero();
 void draw_L();
 void draw_A();
+void draw_S();
+void draw_P();
+void draw_E();
+void draw_D();
+void draw_T();
+void draw_R();
+void draw_I();
+void draw_N();
 
 #endif /* TIMEWIDGET_H_ */

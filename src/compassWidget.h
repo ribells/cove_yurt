@@ -10,7 +10,7 @@
 
 void tm_compass_ui(int iType, float x, float y, float z, float yaw, float pitch, float roll);
 int get_compass_ui_current_direction();
-void set_compass_ui_current_direction(double direction);
+void set_compass_ui_current_direction(double direction, double animationAngle);
 int set_compass_ui_active_index(int i);
 void show_layout_compass(bool bShow);
 

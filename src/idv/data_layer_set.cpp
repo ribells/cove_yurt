@@ -50,7 +50,7 @@ void CTimeLine::setPlay(bool bPlay, bool bReverse)
  =============================================================================== */
 void CTimeLine::setFaster()
 {
-	m_Speed *= 1.25;
+	m_Speed *= 1.02;
 	resetTimer();
 }
 
@@ -58,7 +58,7 @@ void CTimeLine::setFaster()
  =============================================================================== */
 void CTimeLine::setSlower()
 {
-	m_Speed /= 1.25;
+	m_Speed /= 1.02;
 	resetTimer();
 }
 

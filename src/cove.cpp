@@ -76,21 +76,19 @@ void draw_cove(float x, float y, float z, float yaw, float pitch, float roll)
 	 */
 	glScalef(10.f, 10.f, 10.f); //AXIAL
 	g_World.updateTerrain();
+	glTranslatef(-130.0, 0.08, -46.0);
+	glRotatef(g_AnimateAngle, 0, 1, 0);
 	if(tm_get_should_animate()) {
-		glTranslatef(-130.0, 0.08, -46.0);
-		glRotatef(g_AnimateAngle, 0, 1, 0);
-		//g_AnimateAngle += 0.2;
 		g_AnimateAngle += .02;
-		glTranslatef(130.0, -0.08, 46.0);
+		set_compass_ui_current_direction(get_compass_ui_current_direction(), g_AnimateAngle);
 	}
+	glTranslatef(130.0, -0.08, 46.0);
 	g_Draw.drawGL();
 	draw_decorations(); //AXIAL
 	//draw_countries(); //WORLDQUAKES
-	if(tm_get_should_animate()) {
-		glTranslatef(-130.0, 0.08, -46.0);
-		glRotatef(-g_AnimateAngle, 0, 1, 0);
-		glTranslatef(130.0, -0.08, 46.0);
-	}
+	glTranslatef(-130.0, 0.08, -46.0);
+	glRotatef(-g_AnimateAngle, 0, 1, 0);
+	glTranslatef(130.0, -0.08, 46.0);
 	glScalef(1.0f/10.f, 1.0f/10.f, 1.0f/10.f); //AXIAL
 	tm_time_ui(0, x, y, z, yaw, pitch, roll);
 	tm_compass_ui(0, x, y, z, yaw, pitch, roll);
@@ -107,9 +105,6 @@ void draw_decorations(void)
 	float white[] = { 0.8, 0.8, 0.8, 0.5 };
 	float yellow[] = { 0.8, 0.8, 0.2, 0.7 };
 	float green[] = { 0.2, 0.8, 0.2, 1.0 };
-	float blue[] = { 0.2, 0.2, 0.5, 1.0 };
-	float brown[] = { 0.1, 0.1, 0.0, 1.0 };
-	float red[] = { 0.8, 0.2, 0.2, 0.5 };
 	glLightfv(GL_LIGHT0, GL_POSITION, pos);
 	glEnable(GL_LIGHT0);
 

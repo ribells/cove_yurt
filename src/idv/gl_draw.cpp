@@ -1300,8 +1300,7 @@ bool CDraw::drawGL()
 		} else if(g_World.getTimeLine().getPlaying()) {
 			temptime = (double) g_World.getTimeLine().getTime() + (spd/10.0);
 		} else {
-			//temptime = get_time_ui_current_time();  //world is stopped
-			//g_World.getTimeLine().setCurTime(temptime);
+			temptime = get_time_ui_current_time();  //world is stopped
 		}
 		if(temptime < g_World.getTimeLine().getSelStart()) {
 			temptime = g_World.getTimeLine().getSelStart();
