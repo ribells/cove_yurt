@@ -8,3 +8,4 @@ Laptop backup is at: /Users/ribells/Desktop/shared/Brown/cove-yurt
 Git commands to sync laptop backup with remote are:
 1. git commit -a -m “my comment here“
 2. git push origin master
+

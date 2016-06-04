@@ -458,6 +458,11 @@ void draw_lead_time_ui() {
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glVertex3f(2.5f, 0.0f, 0.0f);
 	glEnd();
+	glPushMatrix();
+	glTranslatef(2.7, 0.0, 0.0);
+	glScalef(0.2, 0.2, 0.2);
+	draw_number(g_World.getTimeLine().getLead()/(60*60*24));
+	glPopMatrix();
 	glScalef(0.05, 0.05, 0.05);
 	float part_done = (g_World.getTimeLine().getTime()
 			- g_World.getTimeLine().getStart()
@@ -489,6 +494,11 @@ void draw_trail_time_ui() {
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glVertex3f(2.5f, 0.0f, 0.0f);
 	glEnd();
+	glPushMatrix();
+	glTranslatef(2.7, 0.0, 0.0);
+	glScalef(0.2, 0.2, 0.2);
+	draw_number(g_World.getTimeLine().getTrail()/(60*60*24));
+	glPopMatrix();
 	glScalef(0.05, 0.05, 0.05);
 	float part_done = (g_World.getTimeLine().getTime()
 			- g_World.getTimeLine().getStart()
@@ -521,29 +531,12 @@ void draw_speed_ui() {
 	glVertex3f(2.5f, 0.0f, 0.0f);
 	glEnd();
 	float relative_speed = (g_World.getTimeLine().getSpeed() / 1000000.0);
+	glPushMatrix();
 	glTranslatef(2.7, 0.0, 0.0);
-	glScalef(0.25, 0.25, 0.25);
-	if (relative_speed > 512.0) {
-		draw_nine();
-	} else if (relative_speed > 256.0) {
-		draw_eight();
-	} else if (relative_speed > 128.0) {
-		draw_seven();
-	} else if (relative_speed > 64.0) {
-		draw_six();
-	} else if (relative_speed > 8.0) {
-		draw_five();
-	} else if (relative_speed > 4.0) {
-		draw_four();
-	} else if (relative_speed > 2.0) {
-		draw_three();
-	} else if (relative_speed > 1.0) {
-		draw_two();
-	} else {
-		draw_one();
-	}
-	glTranslatef(-10.8, 0.0, 0.0);
-	glScalef(0.20, 0.20, 0.20);
+	glScalef(0.2, 0.2, 0.2);
+	draw_number(g_World.getTimeLine().getSpeed()/(60*60*24));
+	glPopMatrix();
+	glScalef(0.05, 0.05, 0.05);
 	if (relative_speed > 1.0) {
 		glTranslatef(50.0, 0.0, 0.0);
 	} else {
@@ -555,6 +548,7 @@ void draw_speed_ui() {
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, blue);
 	}
 	draw_diamond();
+
 	glPopMatrix();
 }
 
@@ -689,6 +683,42 @@ void draw_pyramid() {
 		glVertex3fv(&v[faces[i][3]][0]);
 		glEnd();
 	}
+}
+
+void draw_number(float num)
+{
+	GLfloat mat_emission[] = {0.3, 0.3, 0.3, 0.0};
+	GLfloat white[] = {1.0, 1.0, 1.0, 1.0};
+	glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, active);
+    int period_loc = 10;
+	std::ostringstream s;
+	s << (num);
+	//s.str();
+
+	for(std::string::size_type i = 0; i < period_loc+3; ++i) {
+		switch (s.str()[i]) {
+			case '1': draw_one(); break;
+			case '2': draw_two(); break;
+			case '3': draw_three(); break;
+			case '4': draw_four(); break;
+			case '5': draw_five(); break;
+			case '6': draw_six(); break;
+			case '7': draw_seven(); break;
+			case '8': draw_eight(); break;
+			case '9': draw_nine(); break;
+			case '0': draw_zero(); break;
+			default : if (period_loc==10) {
+						  period_loc = i;
+						  draw_period();
+					  }
+		}
+		glTranslatef(1.0, 0.0, 0.0);
+	}
+	mat_emission[0] = 0.0;
+	mat_emission[1] = 0.0;
+	mat_emission[2] = 0.0;
+	glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
 }
 
 void draw_date() {
@@ -826,6 +856,14 @@ void draw_hyphen() {
 	glBegin(GL_LINES);
 	glVertex3f(0.3f, 0.5f, 0.0f);
 	glVertex3f(0.7f, 0.5f, 0.0f);
+	glEnd();
+}
+
+void draw_period()
+{
+	glBegin(GL_LINES);
+		glVertex3f(0.45f,0.0f,0.0f);
+		glVertex3f(0.55f,0.0f,0.0f);
 	glEnd();
 }
 

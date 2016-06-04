@@ -31,8 +31,9 @@ void draw_pyramid();
 void draw_diamond();
 
 void draw_labels();
-
+void draw_number(float num);
 void draw_date();
+void draw_period();
 void draw_hyphen();
 void draw_one();
 void draw_two();
