@@ -1947,6 +1947,11 @@ void CDataLayer::RenderData(double dSpeed, int iSelectID)
 						size *= 0.2;
 					}
 					setPointColor(i, iSelectID);
+					/* BDC - temporary to get grey color for unplayed quakes */
+					if(getData().getDataTime(ndx) > m_Time) {
+						float colr[] = {0.5, 0.5, 0.5, 1.0};
+						glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, colr);
+					}
 					Vec3f pos = m_ScnPlane[i];
 
 					if (bGlyph)

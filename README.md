@@ -5,7 +5,7 @@ COVE (and cove-yurt) are open source code bases and as such are always wanting t
 Remote Github repository is at: https://github.com/ribells/cove_yurt/
 Laptop backup is at: /Users/ribells/Desktop/shared/Brown/cove-yurt
 
-Git commands to sync laptop backup with remote are:
+Git commands to sync laptop backup with remote are (run with sudo as root):
 1. git commit -a -m “my comment here“
 2. git push origin master
 

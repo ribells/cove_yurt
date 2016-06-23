@@ -415,7 +415,7 @@ void C3DSceneMgr::drawPrimType(int i)
 		break;
 
 	case 2:
-		gluSphere(prim_quadric, .5, 10, 10);
+		gluSphere(prim_quadric, .5, 6, 6);
 		break;
 
 	case 3:
